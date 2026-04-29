@@ -7,8 +7,8 @@
         <router-link to="/products" class="hover:text-white transition-colors border-b-2 border-transparent hover:border-white py-4 opacity-90 hover:opacity-100">Products</router-link>
         <router-link to="/services" class="hover:text-white transition-colors border-b-2 border-transparent hover:border-white py-4 opacity-90 hover:opacity-100">Services</router-link>
         <router-link to="/warranty" class="hover:text-white transition-colors border-b-2 border-transparent hover:border-white py-4 opacity-90 hover:opacity-100">Check Warranty</router-link>
-        <router-link to="/about" class="hover:text-white transition-colors border-b-2 border-transparent hover:border-white py-4 opacity-90 hover:opacity-100">About Us</router-link>
         <router-link to="/contact" class="hover:text-white transition-colors border-b-2 border-transparent hover:border-white py-4 opacity-90 hover:opacity-100">Contact Us</router-link>
+        <router-link to="/about" class="hover:text-white transition-colors border-b-2 border-transparent hover:border-white py-4 opacity-90 hover:opacity-100">About Us</router-link>
       </nav>
 
       <button @click="toggleMobileMenu" class="lg:hidden p-2 -ml-2 hover:bg-black/10 rounded-lg transition-colors">

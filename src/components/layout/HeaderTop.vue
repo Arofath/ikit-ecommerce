@@ -17,11 +17,11 @@
     <div class="py-3 md:py-2">
       <div class="container mx-auto px-4 lg:px-8 max-w-7xl flex flex-wrap md:flex-nowrap items-center justify-between gap-y-4 gap-x-6">
         
-        <router-link to="/" class="shrink-0 flex items-center group cursor-pointer -my-4 md:-my-12">
+        <router-link to="/" class="shrink-0 flex items-center group cursor-pointer -my-8 md:-my-12">
           <img
             src="@/assets/images/ikit-logo3.png"
             alt="Ikit Computer"
-            class="h-16 md:h-28 w-auto object-contain hover:opacity-80 transition"
+            class="h-28 md:h-28 w-auto object-contain hover:opacity-80 transition"
           />
         </router-link>
 
