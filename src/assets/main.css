@@ -1,1 +1,27 @@
 @import "tailwindcss";
+
+@theme {
+  /* 🌟 ១. ពណ៌ប្រចាំហាង (ដែលអ្នកបានកំណត់) */
+  --color-ikit-blue: #0b3992; 
+  --color-ikit-red: #e31820;
+  --color-ikit-dark: #121b2a; 
+
+  /* 🌟 ២. ពណ៌សម្រាប់ផ្ទៃខាងក្រោយ និងសំបក (Background & Surfaces) */
+  --color-ikit-bg: #f8fafc;       /* ពណ៌ប្រផេះស្រាលបំផុតសម្រាប់ផ្ទៃ Website ទាំងមូល */
+  --color-ikit-surface: #ffffff;  /* ពណ៌សសម្រាប់ Card ឬផ្នែកដែលចង់ឱ្យលេចធ្លោ */
+  --color-ikit-border: #e2e8f0;   /* ពណ៌សម្រាប់បន្ទាត់ខណ្ឌ (Dividers) */
+
+  /* 🌟 ៣. ពណ៌សម្រាប់អក្សរ (Typography) */
+  --color-ikit-text-main: #1e293b;    /* ពណ៌ខ្មៅដិតសម្រាប់ចំណងជើង និងអក្សរទូទៅ */
+  --color-ikit-text-muted: #64748b;   /* ពណ៌ប្រផេះសម្រាប់អក្សរតូចៗ ឬព័ត៌មានបន្ទាប់បន្សំ */
+  --color-ikit-text-light: #94a3b8;   /* ពណ៌ប្រផេះស្រាលសម្រាប់ Placeholder */
+
+  /* 🌟 ៤. ពណ៌សម្រាប់ស្ថានភាពផ្សេងៗ (Functional Colors) */
+  --color-ikit-success: #10b981;  /* ពណ៌បៃតង (សម្រាប់បញ្ជាទិញជោគជ័យ) */
+  --color-ikit-warning: #f59e0b;  /* ពណ៌លឿងទុំ (សម្រាប់ទំនិញជិតអស់ពីស្តុក) */
+  --color-ikit-info: #3b82f6;     /* ពណ៌ខៀវស្រាល (សម្រាប់ព័ត៌មានទូទៅ) */
+  
+  /* 🌟 ៥. កំណត់ជា Default សម្រាប់ Tailwind (ស្រេចចិត្ត) */
+  --color-primary: var(--color-ikit-blue);
+  --color-secondary: var(--color-ikit-red);
+}

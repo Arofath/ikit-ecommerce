@@ -3,6 +3,7 @@ import { useAuthStore } from '@/stores/authStore'
 import { h } from 'vue' // 🌟 បន្ថែមការ Import 'h' ពី vue
 import LoginView from '@/view/LoginView.vue'
 import MainLayout from '@/layouts/MainLayout.vue'
+import HomeView from '@/view/HomeView.vue'
 
 // 🌟 ១. ជួសជុល Warning ទី ២៖ ប្រើមុខងារ h() ជំនួសឲ្យ template
 const DummyView = (name) => ({
@@ -23,7 +24,7 @@ const router = createRouter({
       component: MainLayout,
       children: [
         // Public Routes
-        { path: '', name: 'Home', component: LoginView },
+        { path: '', name: 'Home', component: HomeView },
         { path: 'products', name: 'Products', component: DummyView('Products') },
         { path: 'cart', name: 'Cart', component: DummyView('Cart') },
 
