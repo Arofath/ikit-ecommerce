@@ -4,6 +4,7 @@ import { h } from 'vue' // 🌟 បន្ថែមការ Import 'h' ពី vu
 import LoginView from '@/view/LoginView.vue'
 import MainLayout from '@/layouts/MainLayout.vue'
 import HomeView from '@/view/HomeView.vue'
+import ProductDetailView from '@/view/ProductDetailView.vue'
 
 // 🌟 ១. ជួសជុល Warning ទី ២៖ ប្រើមុខងារ h() ជំនួសឲ្យ template
 const DummyView = (name) => ({
@@ -25,6 +26,11 @@ const router = createRouter({
       children: [
         // Public Routes
         { path: '', name: 'Home', component: HomeView },
+        {
+          path: '/product/:id',
+          name: 'ProductDetail',
+          component: ProductDetailView,
+        },
         { path: 'products', name: 'Products', component: DummyView('Products') },
         { path: 'cart', name: 'Cart', component: DummyView('Cart') },
 
