@@ -16,8 +16,14 @@
       </a>
     </div>
 
+    <div v-if="isLoading" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div v-for="i in 6" :key="i" class="bg-white border border-slate-100 rounded-lg h-24 flex items-center justify-center p-4 animate-pulse">
+         <div class="w-16 h-8 bg-slate-200 rounded"></div>
+      </div>
+    </div>
+
     <!-- 🌟 បង្ហាញ Logo Brand -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+    <div v-else class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
       <a 
         v-for="brand in topBrands" 
         :key="brand.id" 
@@ -44,6 +50,10 @@ const props = defineProps({
     type: Array,
     required: true,
     default: () => []
+  },
+  isLoading: {
+    type: Boolean,
+    default: false
   }
 })
 

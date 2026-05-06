@@ -15,8 +15,24 @@
       </a>
     </div>
 
+    <!-- Skeleton -->
+     <div v-if="isLoading" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+      <!-- ប្រើ Loop 5 ដង ដើម្បីបង្កើតប្រអប់សខ្មោចចំនួន ៥ -->
+      <div v-for="i in 5" :key="i" class="bg-white border border-slate-100 rounded-lg p-4 animate-pulse">
+        <!-- រូបភាព Skeleton -->
+        <div class="aspect-square bg-slate-200 rounded-md mb-4 w-full"></div>
+        <!-- ឈ្មោះ Brand Skeleton -->
+        <div class="h-3 bg-slate-200 rounded w-1/3 mb-2"></div>
+        <!-- ចំណងជើងទំនិញ Skeleton (2 បន្ទាត់) -->
+        <div class="h-4 bg-slate-200 rounded w-full mb-2"></div>
+        <div class="h-4 bg-slate-200 rounded w-2/3 mb-4"></div>
+        <!-- តម្លៃ Skeleton -->
+        <div class="h-5 bg-slate-200 rounded w-1/2 mt-auto"></div>
+      </div>
+    </div>
+
     <!-- 🌟 បញ្ជីទំនិញណែនាំ -->
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+    <div v-else class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
       
       <!-- លូកយកទិន្នន័យពី props `products` មកបង្ហាញ -->
       <div 
@@ -69,6 +85,10 @@ defineProps({
     type: Array,
     required: true,
     default: () => []
+  },
+  isLoading: {
+    type: Boolean,
+    default: false
   }
 })
 </script>

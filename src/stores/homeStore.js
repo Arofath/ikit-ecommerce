@@ -5,6 +5,9 @@ export const useHomeStore = defineStore('home', {
   state: () => ({
     recommendedProducts: [],
     newArrivals: [],
+    brands: [],
+    popularCategories: [],
+    sidebarCategories: [],
     isLoading: false,
     error: null,
   }),
@@ -30,6 +33,8 @@ export const useHomeStore = defineStore('home', {
         this.recommendedProducts = payload.recommended
         this.newArrivals = payload.new_arrivals
         this.brands = payload.top_brands
+        this.popularCategories = payload.popular_categories
+        this.sidebarCategories = payload.sidebar_categories
 
         console.log('🌐 ទាញទិន្នន័យជោគជ័យពី Backend API!')
       } catch (err) {

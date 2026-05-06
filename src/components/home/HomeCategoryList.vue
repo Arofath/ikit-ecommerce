@@ -1,61 +1,92 @@
 <template>
-  <!-- 🌟 ១. ដកកម្ពស់ថេរចេញលើ Mobile ដើម្បីឱ្យវាបត់ចុះឡើងបាន, ទុក h-[450px] សម្រាប់តែ Desktop (lg) -->
-  <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col lg:h-112.5">
+  <!-- 🌟 ១. ជួសជុលបញ្ហា Z-Index (relative z-40) -->
+  <div class="bg-white border border-slate-200 rounded-lg shadow-sm flex flex-col lg:h-[450px] relative z-40">
     
-    <!-- 🌟 ២. ក្បាលពណ៌ខៀវ (ប្តូរទៅជា Button ដើម្បីឱ្យចុចបានលើ Mobile) -->
-    <button 
-      @click="toggleMobileCategory" 
-      class="bg-ikit-blue text-white font-bold py-3 px-4 flex items-center justify-between w-full shrink-0 cursor-pointer lg:cursor-default"
-    >
+    <button @click="toggleMobileCategory" class="bg-ikit-blue text-white font-bold py-3 px-4 flex items-center justify-between w-full shrink-0 cursor-pointer lg:cursor-default">
       <div class="flex items-center gap-2">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
         <span>SHOP BY CATEGORY</span>
       </div>
-      <!-- Icon ព្រួញ (បង្ហាញតែលើ Mobile) វិលចុះក្រោមពេលបើក -->
-      <svg 
-        class="w-5 h-5 lg:hidden transition-transform duration-300" 
-        :class="isOpen ? 'rotate-180' : ''"
-        fill="none" stroke="currentColor" viewBox="0 0 24 24"
-      >
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-      </svg>
+      <svg class="w-5 h-5 lg:hidden transition-transform duration-300" :class="isOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
     </button>
 
-    <!-- 🌟 ៣. បញ្ជីប្រភេទ (ប្រើ v-show / Class ដើម្បីលាក់លើ Mobile បើអត់ទាន់ចុច) -->
-    <ul 
-      :class="[isOpen ? 'block' : 'hidden', 'lg:block divide-y divide-slate-100 overflow-y-auto grow custom-scrollbar max-h-75 lg:max-h-full']"
-    >
-      <li v-for="(category, index) in categories" :key="index" class="py-3 px-4 hover:bg-slate-50 cursor-pointer flex justify-between items-center transition-colors group">
-        <span class="text-sm text-slate-700 group-hover:text-ikit-blue group-hover:font-medium transition-all">{{ category }}</span>
-        <svg class="w-4 h-4 text-slate-400 group-hover:text-ikit-red transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+    <ul v-if="isLoading" class="divide-y divide-slate-100 overflow-hidden grow block">
+      <li v-for="i in 9" :key="i" class="py-3 px-4 flex justify-between items-center animate-pulse">
+        <div class="h-4 bg-slate-200 rounded w-2/3"></div>
+        <div class="w-4 h-4 bg-slate-200 rounded-full"></div>
       </li>
     </ul>
 
+    <!-- 🌟 ២. ជួសជុលបញ្ហា Overflow (lg:overflow-visible) -->
+    <ul v-else :class="[isOpen ? 'block' : 'hidden', 'lg:block divide-y divide-slate-100 overflow-y-auto lg:overflow-visible grow custom-scrollbar max-h-75 lg:max-h-full']">
+      
+      <li v-for="cat in categories" :key="cat.id" class="group relative">
+        
+        <div @click="toggleSub(cat.id)" class="py-3 px-4 hover:bg-slate-50 cursor-pointer flex justify-between items-center transition-colors">
+          <span class="text-sm text-slate-700 font-medium group-hover:text-ikit-blue transition-all">
+            {{ cat.name }}
+          </span>
+          <svg 
+            v-if="cat.children && cat.children.length > 0" 
+            :class="activeSub === cat.id ? 'rotate-90 text-ikit-blue' : 'text-slate-400'"
+            class="w-4 h-4 group-hover:text-ikit-blue transition-all duration-300 transform" 
+            fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </div>
+
+        <template v-if="cat.children && cat.children.length > 0">
+          
+          <div class="hidden lg:group-hover:block absolute left-full top-0 z-50 pl-1 w-64">
+            <div class="bg-white border border-slate-200 shadow-md rounded-sm overflow-hidden">
+              <ul class="divide-y divide-slate-100">
+                <li v-for="sub in cat.children" :key="sub.id">
+                  <a href="#" class="flex items-center justify-between px-4 py-3 text-sm text-slate-600 hover:text-ikit-blue hover:bg-slate-50 transition-colors">
+                    <span>{{ sub.name }}</span>
+                    <svg class="w-3 h-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <ul v-show="activeSub === cat.id" class="lg:hidden bg-slate-50 px-4 py-2 border-l-4 border-ikit-blue space-y-1 shadow-inner">
+            <li v-for="sub in cat.children" :key="sub.id">
+              <a href="#" class="block py-2 text-sm text-slate-600 hover:text-ikit-blue transition-colors">
+                &rarr; {{ sub.name }}
+              </a>
+            </li>
+          </ul>
+
+        </template>
+      </li>
+
+    </ul>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, defineProps } from 'vue'
 
-// បង្កើត State សម្រាប់កត់ត្រាការបើក/បិទលើ Mobile
-const isOpen = ref(false)
+defineProps({
+  categories: {
+    type: Array,
+    required: true,
+    default: () => []
+  },
+  isLoading: {
+    type: Boolean,
+    default: false
+  }
+})
 
-const toggleMobileCategory = () => {
-  isOpen.value = !isOpen.value
-}
+// State សម្រាប់គ្រប់គ្រង UI
+const isOpen = ref(false) 
+const activeSub = ref(null) 
 
-const categories = ref([
-  'Laptops & Computers',
-  'PC Components',
-  'Smartphones & Tablets',
-  'Monitors & Displays',
-  'Gaming Accessories',
-  'Printers & Scanners',
-  'Networking Devices',
-  'Software & Security',
-  'Storage & Drives',
-  'More Categories'
-])
+const toggleMobileCategory = () => isOpen.value = !isOpen.value 
+const toggleSub = (id) => { activeSub.value = activeSub.value === id ? null : id }
 </script>
 
 <style scoped>
