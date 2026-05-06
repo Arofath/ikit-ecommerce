@@ -8,6 +8,7 @@ export const useHomeStore = defineStore('home', {
     brands: [],
     popularCategories: [],
     sidebarCategories: [],
+    slideshows: [],
     isLoading: false,
     error: null,
   }),
@@ -35,6 +36,7 @@ export const useHomeStore = defineStore('home', {
         this.brands = payload.top_brands
         this.popularCategories = payload.popular_categories
         this.sidebarCategories = payload.sidebar_categories
+        this.slideshows = payload.slideshows
 
         console.log('🌐 ទាញទិន្នន័យជោគជ័យពី Backend API!')
       } catch (err) {

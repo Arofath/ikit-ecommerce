@@ -34,43 +34,48 @@
     <!-- 🌟 បញ្ជីទំនិញណែនាំ -->
     <div v-else class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
       
-      <!-- លូកយកទិន្នន័យពី props `products` មកបង្ហាញ -->
-      <div 
+      <!-- 🌟 កែប្រែ <div> ទៅជា <router-link> រួចចង្អុល (to) ទៅកាន់ទំព័រ Detail តាមរយៈ Slug -->
+      <router-link 
         v-for="product in products" 
         :key="product.id" 
-        class="bg-white border border-slate-200 rounded-lg p-4 hover:shadow-lg hover:border-ikit-blue transition-all group relative flex flex-col h-full"
+        :to="'/product/' + product.slug" 
+        class="bg-white border border-slate-200 rounded-lg p-4 hover:shadow-lg hover:border-ikit-blue transition-all group relative flex-col h-full block"
       >
         <span class="absolute top-3 left-3 bg-orange-500 text-white text-[9px] tracking-wider font-bold px-2 py-1 rounded z-10">
           RECOMMENDED
         </span>
         
-        <!-- រូបភាពទំនិញ (ទាញយកពី product.thumbnail.image_path) -->
+        <!-- រូបភាពទំនិញ -->
         <div class="aspect-square bg-slate-50 rounded-md mb-4 flex items-center justify-center p-4 overflow-hidden relative">
            <img 
              :src="product.thumbnail ? product.thumbnail.image_path : '/default-placeholder.png'" 
              :alt="product.name" 
              class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" 
            />
-           <button class="absolute -bottom-10 group-hover:bottom-2 left-1/2 -translate-x-1/2 bg-ikit-blue hover:bg-ikit-dark text-white text-xs font-bold py-2 px-4 rounded transition-all duration-300 w-[90%] shadow-md">
+           <!-- ចំណាំ៖ ប៊ូតុង Add to Cart អាចនឹងមានបញ្ហាពេលស្ថិតក្នុង <router-link> ។ 
+                ដើម្បីការពារកុំឱ្យពេលចុច Add to Cart វារត់ទៅ Detail 
+                យើងត្រូវថែម @click.prevent="addToCart(product)" -->
+           <button 
+             @click.prevent="console.log('Add to cart clicked')" 
+             class="absolute -bottom-10 group-hover:bottom-2 left-1/2 -translate-x-1/2 bg-ikit-blue hover:bg-ikit-dark text-white text-xs font-bold py-2 px-4 rounded transition-all duration-300 w-[90%] shadow-md z-20"
+           >
              Add to Cart
            </button>
         </div>
 
         <!-- ព័ត៌មានទំនិញ -->
-        <!-- ថែមឈ្មោះ Brand ពី product.brand.name ឱ្យមើលទៅកាលីបជាងមុន -->
         <span v-if="product.brand" class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
           {{ product.brand.name }}
         </span>
         
-        <h3 class="text-sm font-medium text-slate-800 mb-2 line-clamp-2 hover:text-ikit-blue cursor-pointer transition-colors mt-auto">
+        <h3 class="text-sm font-medium text-slate-800 mb-2 line-clamp-2 group-hover:text-ikit-blue transition-colors mt-auto">
           {{ product.name }}
         </h3>
         
-        <!-- តម្លៃ (ថែមសញ្ញា $ ពីមុខ ព្រោះ API ឱ្យមកតែលេខ 255.00) -->
         <div class="font-bold text-ikit-red text-base">
           ${{ product.price }}
         </div>
-      </div>
+      </router-link>
 
     </div>
   </section>

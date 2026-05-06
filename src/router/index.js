@@ -27,7 +27,7 @@ const router = createRouter({
         // Public Routes
         { path: '', name: 'Home', component: HomeView },
         {
-          path: '/product/:id',
+          path: '/product/:slug',
           name: 'ProductDetail',
           component: ProductDetailView,
         },

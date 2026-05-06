@@ -1,39 +1,148 @@
 <template>
-  <div class="bg-slate-100 rounded-lg h-100 md:h-112.5 relative overflow-hidden flex items-center group shadow-sm">
-    
-    <div class="px-6 sm:px-8 md:px-16 w-full md:w-3/5 z-10 relative">
-      <span class="inline-block bg-white text-ikit-red font-extrabold text-xs px-4 py-1.5 rounded-full mb-3 md:mb-4 shadow-sm">
-        GET 20% OFF
-      </span>
-      <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-800 mb-3 md:mb-4 leading-tight">
-        Smart System <br>
-        <span class="text-ikit-blue">Generation</span>
-      </h1>
-      <p class="text-slate-500 text-sm mb-6 md:mb-8 leading-relaxed max-w-sm md:max-w-md">
-        Upgrade your workspace with our latest high-performance laptops. Limited time offer, grab yours today!
-      </p>
-      <button class="bg-ikit-blue hover:bg-ikit-dark text-white font-bold py-2.5 md:py-3 px-6 md:px-8 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 text-sm md:text-base">
-        SHOP NOW
-      </button>
-    </div>
+  <!-- 🌟 ១. បង្ហាញ Skeleton ពេលកំពុង Loading -->
+  <div
+    v-if="isLoading"
+    class="bg-slate-200 rounded-lg h-50 sm:h-75 md:h-112.5 animate-pulse shadow-sm"
+  ></div>
 
-    <div class="absolute right-0 top-0 h-full w-full sm:w-2/3 md:w-1/2">
-      <div class="absolute inset-0 bg-linear-to-r from-slate-100 via-slate-100/90 sm:via-slate-100/70 md:via-slate-100/50 to-transparent z-0"></div>
-      <img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Laptop" class="h-full w-full object-cover object-right" />
-    </div>
+  <!-- 🌟 ២. ផ្ទៃ Slider ពិតប្រាកដ (Image Only) -->
+  <div
+    v-else-if="slides.length > 0"
+    class="bg-slate-100 rounded-lg w-full h-50 sm:h-75 lg:h-112.5 relative overflow-hidden flex items-center group shadow-sm"
+    @mouseenter="pauseSlide"
+    @mouseleave="startSlide"
+  >
+    <!-- 🌟 Loop បង្ហាញ Slide នីមួយៗ -->
+    <transition-group name="fade">
+      <div
+        v-for="(slide, index) in slides"
+        :key="slide.id"
+        v-show="currentIndex === index"
+        class="absolute inset-0 w-full h-full"
+      >
+        <component
+          :is="slide.link_url ? 'a' : 'div'"
+          :href="slide.link_url ? slide.link_url : null"
+          class="w-full h-full block"
+          :class="slide.link_url ? 'cursor-pointer' : 'cursor-default'"
+        >
+          <img
+            :src="slide.image_path"
+            alt="Promotional Banner"
+            class="h-full w-full object-cover object-center"
+          />
+        </component>
+      </div>
+    </transition-group>
 
-    <button class="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white text-slate-800 rounded-full items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-20">
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+    <!-- (កូដប៊ូតុងឆ្វេងស្តាំ និងចំណុច Dots រក្សាទុកដដែល) -->
+
+    <!-- 🌟 ប៊ូតុងឆ្វេង/ស្តាំ (បង្ហាញពេល Hover លើកុំព្យូទ័រ) -->
+    <button
+      @click="prevSlide"
+      class="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white text-slate-800 rounded-full items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-20"
+    >
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M15 19l-7-7 7-7"
+        ></path>
+      </svg>
     </button>
-    <button class="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white text-slate-800 rounded-full items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-20">
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+
+    <button
+      @click="nextSlide"
+      class="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white text-slate-800 rounded-full items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-20"
+    >
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 5l7 7-7 7"
+        ></path>
+      </svg>
     </button>
 
+    <!-- 🌟 ចំណុចតូចៗខាងក្រោម (Pagination Dots) -->
     <div class="absolute bottom-4 left-0 w-full flex justify-center gap-2 z-20">
-      <span class="w-8 h-2.5 rounded-full bg-ikit-blue cursor-pointer transition-all"></span>
-      <span class="w-2.5 h-2.5 rounded-full bg-slate-300 hover:bg-slate-400 cursor-pointer transition-all"></span>
-      <span class="w-2.5 h-2.5 rounded-full bg-slate-300 hover:bg-slate-400 cursor-pointer transition-all"></span>
+      <span
+        v-for="(slide, index) in slides"
+        :key="'dot-' + slide.id"
+        @click="goToSlide(index)"
+        :class="
+          currentIndex === index
+            ? 'w-8 bg-ikit-blue'
+            : 'w-2.5 bg-white hover:bg-slate-200 opacity-80'
+        "
+        class="h-2.5 rounded-full cursor-pointer transition-all duration-300 shadow-sm"
+      ></span>
     </div>
-
   </div>
 </template>
+
+<script setup>
+import { defineProps, onMounted, onUnmounted, ref } from 'vue'
+
+const props = defineProps({
+  slides: {
+    type: Array,
+    required: true,
+    default: () => [],
+  },
+  isLoading: {
+    type: Boolean,
+    default: false,
+  },
+})
+
+const currentIndex = ref(0)
+let intervalId = null
+
+const nextSlide = () => {
+  if (props.slides.length > 0) {
+    currentIndex.value = (currentIndex.value + 1) % props.slides.length
+  }
+}
+
+const prevSlide = () => {
+  if (props.slides.length > 0) {
+    currentIndex.value = currentIndex.value === 0 ? props.slides.length - 1 : currentIndex.value - 1
+  }
+}
+
+const goToSlide = (index) => {
+  currentIndex.value = index
+}
+
+const startSlide = () => {
+  if (props.slides.length > 1) {
+    intervalId = setInterval(nextSlide, 5000)
+  }
+}
+
+const pauseSlide = () => {
+  clearInterval(intervalId)
+}
+
+onMounted(() => {
+  startSlide()
+})
+
+onUnmounted(() => {
+  pauseSlide()
+})
+</script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.8s ease-in-out;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

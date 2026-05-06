@@ -1,6 +1,6 @@
 <template>
   <!-- 🌟 ១. ជួសជុលបញ្ហា Z-Index (relative z-40) -->
-  <div class="bg-white border border-slate-200 rounded-lg shadow-sm flex flex-col lg:h-[450px] relative z-40">
+  <div class="bg-white border border-slate-200 rounded-lg shadow-sm flex flex-col lg:h-112.5 relative z-40">
     
     <button @click="toggleMobileCategory" class="bg-ikit-blue text-white font-bold py-3 px-4 flex items-center justify-between w-full shrink-0 cursor-pointer lg:cursor-default">
       <div class="flex items-center gap-2">

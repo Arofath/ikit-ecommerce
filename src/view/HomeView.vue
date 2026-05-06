@@ -3,11 +3,14 @@
     <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-12">
       <!-- 🌟 ដកពាក្យ 'hidden lg:block' ចេញ ដើម្បីឱ្យវាបង្ហាញលើ Mobile ដែរ -->
       <div class="lg:col-span-3">
-        <HomeCategoryList :categories="homeStore.sidebarCategories" :is-loading="homeStore.isLoading"/>
+        <HomeCategoryList
+          :categories="homeStore.sidebarCategories"
+          :is-loading="homeStore.isLoading"
+        />
       </div>
 
       <div class="lg:col-span-9">
-        <HomeHeroSlider />
+        <HomeHeroSlider :slides="homeStore.slideshows" :is-loading="homeStore.isLoading" />
       </div>
     </section>
 
@@ -19,9 +22,9 @@
 
     <HomeNewArrivals :products="homeStore.newArrivals" :is-loading="homeStore.isLoading" />
 
-    <HomePopularCategories 
-      :categories="homeStore.popularCategories" 
-      :is-loading="homeStore.isLoading" 
+    <HomePopularCategories
+      :categories="homeStore.popularCategories"
+      :is-loading="homeStore.isLoading"
     />
 
     <HomePromoBanner />
