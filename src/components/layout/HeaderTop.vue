@@ -25,13 +25,15 @@
           />
         </router-link>
 
-        <div class="w-full md:w-auto md:flex-1 order-last md:order-0 max-w-2xl mx-auto">
+<div class="w-full md:w-auto md:flex-1 order-last md:order-0 max-w-2xl mx-auto relative" ref="searchContainer">
           <form
             @submit.prevent="handleSearch"
             class="relative flex items-center w-full h-11 rounded-full bg-slate-50 border border-slate-200 focus-within:border-ikit-blue focus-within:bg-white focus-within:ring-4 focus-within:ring-ikit-blue/10 transition-all overflow-hidden"
           >
             <input
               v-model="searchQuery"
+              @input="handleLiveSearch"
+              @focus="showDropdown = true"
               type="text"
               placeholder="Search for products..."
               class="w-full h-full bg-transparent outline-none text-sm text-slate-700 px-5 placeholder:text-slate-400"
@@ -45,6 +47,49 @@
               </svg>
             </button>
           </form>
+
+          <div 
+            v-if="showDropdown && searchQuery.trim().length > 0" 
+            class="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50"
+          >
+            <div v-if="isSearching" class="p-4 text-center text-slate-500 text-sm">
+              <i class="fas fa-spinner fa-spin mr-2"></i> Searching...
+            </div>
+
+            <div v-else-if="searchResults.length > 0" class="max-h-100 overflow-y-auto">
+              <router-link 
+                v-for="product in searchResults" 
+                :key="product.id" 
+                :to="'/product/' + product.slug"
+                @click="closeDropdown"
+                class="flex items-center gap-3 p-3 hover:bg-slate-50 border-b border-slate-50 last:border-0 transition-colors cursor-pointer"
+              >
+                <div class="w-12 h-12 bg-white border border-slate-100 rounded-md overflow-hidden shrink-0 p-1">
+                  <img 
+                    :src="product.thumbnail || 'https://placehold.co/100x100/f8fafc/94a3b8?text=No+Image'" 
+                    :alt="product.name" 
+                    class="w-full h-full object-contain"
+                  />
+                </div>
+                <div class="flex-1 overflow-hidden">
+                  <h4 class="text-sm font-medium text-slate-800 line-clamp-1 group-hover:text-ikit-blue">{{ product.name }}</h4>
+                  <div class="text-ikit-red font-bold text-xs mt-1">${{ product.final_price?.toFixed(2) }}</div>
+                </div>
+              </router-link>
+              
+              <div 
+                @click="handleSearch"
+                class="p-3 text-center text-sm font-medium text-ikit-blue hover:bg-blue-50 cursor-pointer border-t border-slate-100"
+              >
+                View all results for "{{ searchQuery }}"
+              </div>
+            </div>
+
+            <div v-else class="p-6 text-center text-slate-500">
+              <svg class="w-10 h-10 mx-auto text-slate-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              <p class="text-sm">No products found</p>
+            </div>
+          </div>
         </div>
 
         <div class="hidden lg:flex items-center gap-6 text-sm">
@@ -82,15 +127,77 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import api from '@/services/api' // 🌟 កុំភ្លេច Import API Axios របស់អ្នក
 
 const router = useRouter()
 const searchQuery = ref('')
 
+// 🌟 អថេរថ្មីសម្រាប់គ្រប់គ្រង Live Search
+const searchResults = ref([])
+const isSearching = ref(false)
+const showDropdown = ref(false)
+const searchContainer = ref(null) // សម្រាប់ចាំឆែកមើលពេលគេចុចកន្លែងផ្សេង
+let debounceTimer = null
+
+// 🌟 មុខងារវាយអក្សរចុះបាញ់ API ភ្លាមៗ (ដោយប្រើ Debounce)
+const handleLiveSearch = () => {
+  showDropdown.value = true
+  
+  if (searchQuery.value.trim() === '') {
+    searchResults.value = []
+    return
+  }
+
+  // លុប Timer ចាស់ចោល បើគាត់កំពុងវាយលឿនៗ
+  clearTimeout(debounceTimer)
+  
+  isSearching.value = true
+
+  // រង់ចាំកន្លះវិនាទី ទើបហៅ API ដើម្បីការពារកុំឱ្យគាំង Server
+  debounceTimer = setTimeout(async () => {
+    try {
+      // ហៅ API ដែលទើបតែបង្កើតថ្មី
+      const response = await api.get('/products/suggestions', {
+        params: { search: searchQuery.value }
+      })
+      searchResults.value = response.data.data
+    } catch (error) {
+      console.error('Error fetching suggestions:', error)
+      searchResults.value = []
+    } finally {
+      isSearching.value = false
+    }
+  }, 500)
+}
+
+// មុខងារ Search ចាស់ (ពេលចុចសញ្ញាស្វែងរក ឬ Enter)
 const handleSearch = () => {
-  if (searchQuery.value.trim()) {
-    router.push({ name: 'Products', query: { search: searchQuery.value } })
+  if (!searchQuery.value.trim()) return
+  closeDropdown() // បិទប្រអប់លោត
+  router.push({
+    path: '/products',
+    query: { search: searchQuery.value.trim() }
+  })
+}
+
+const closeDropdown = () => {
+  showDropdown.value = false
+}
+
+// 🌟 មុខងារសម្រាប់បិទប្រអប់ Dropdown ពេលអតិថិជនចុចកន្លែងផ្សេងនៅលើអេក្រង់
+const handleClickOutside = (event) => {
+  if (searchContainer.value && !searchContainer.value.contains(event.target)) {
+    closeDropdown()
   }
 }
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
 </script>

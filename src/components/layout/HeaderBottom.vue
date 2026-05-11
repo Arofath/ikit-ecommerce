@@ -88,9 +88,10 @@
             ></path>
           </svg>
           <span
-            class="absolute top-0 right-0 w-4 h-4 bg-ikit-red text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-ikit-blue"
+            v-if="favoriteStore.totalFavorites > 0"
+            class="absolute top-0 right-0 min-w-4 h-4 px-1 bg-ikit-red text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-ikit-blue"
           >
-            0
+            {{ favoriteStore.totalFavorites }}
           </span>
         </router-link>
 
@@ -269,11 +270,13 @@
 import { ref, onMounted, watch } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
 import { useCartStore } from '@/stores/cartStore'
+import { useFavoriteStore } from '@/stores/favoriteStore'
 import { useRouter, useRoute } from 'vue-router'
 import Swal from 'sweetalert2'
 
 const authStore = useAuthStore()
 const cartStore = useCartStore()
+const favoriteStore = useFavoriteStore()
 
 const router = useRouter()
 const route = useRoute()
@@ -340,6 +343,7 @@ title: 'Are you sure you want to log out?',
 onMounted(() => {
   if (authStore.isAuthenticated) {
     cartStore.fetchCart()
+    favoriteStore.fetchFavorites()
   }
 })
 
@@ -347,6 +351,11 @@ onMounted(() => {
 watch(() => authStore.isAuthenticated, (isAuth) => {
   if (isAuth) {
     cartStore.fetchCart()
+    favoriteStore.fetchFavorites() 
+  } else {
+    // សម្អាតពេល Logout
+    cartStore.cart = { total_items: 0, total_cart_price: 0, items: [] }
+    favoriteStore.favorites = [] 
   }
 })
 </script>

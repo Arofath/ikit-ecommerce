@@ -12,6 +12,7 @@ import GoogleCallbackView from '@/view/auth/GoogleCallbackView.vue'
 import VerifyOtpView from '@/view/auth/VerifyOtpView.vue'
 import ProfileView from '@/view/auth/ProfileView.vue'
 import CartView from '@/view/CartView.vue'
+import WishlistView from '@/view/WishlistView.vue'
 
 // 🌟 ១. ជួសជុល Warning ទី ២៖ ប្រើមុខងារ h() ជំនួសឲ្យ template
 const DummyView = (name) => ({
@@ -42,9 +43,15 @@ const router = createRouter({
         },
         { path: 'products', name: 'Products', component: ProductListView },
         { path: 'services', name: 'Services', component: ProductListTest },
-        { path: 'cart', name: 'Cart', component: CartView },
 
         // Protected Routes (តម្រូវឱ្យ Login)
+        { path: 'cart', name: 'Cart', component: CartView },
+        {
+          path: 'wishlist',
+          name: 'Wishlist',
+          component: WishlistView,
+          // meta: { requiresAuth: true }, // តម្រូវឱ្យ Login មុននឹងអាចចូលមើល
+        },
         {
           path: 'checkout',
           name: 'Checkout',

@@ -68,26 +68,37 @@
     </div>
 
     <!-- ចំណុចពិសេស (Key Features) - ទាញយកពី Specs ដែលមាន sort_order ពី 1 ដល់ 4 (ជាការបង្ហាញសង្ខេប) -->
-<!-- 🌟 ករណីទី ១៖ បង្ហាញចំណុចពិសេស (Key Features) ទាំង ៦ ប្រសិនបើមាន -->
-    <ul v-if="smartShortSpecs.length > 0" class="space-y-2 text-sm text-slate-600 mb-8 list-disc list-inside">
-      <li 
-        v-for="spec in smartShortSpecs" 
-        :key="spec.key"
-        class="truncate" 
-        :title="spec.value"
-      >
+    <!-- 🌟 ករណីទី ១៖ បង្ហាញចំណុចពិសេស (Key Features) ទាំង ៦ ប្រសិនបើមាន -->
+    <ul
+      v-if="smartShortSpecs.length > 0"
+      class="space-y-2 text-sm text-slate-600 mb-8 list-disc list-inside"
+    >
+      <li v-for="spec in smartShortSpecs" :key="spec.key" class="truncate" :title="spec.value">
         <strong>{{ spec.key }}:</strong> {{ spec.value }}
       </li>
     </ul>
-    
+
     <!-- 🌟 ករណីទី ២៖ បើគ្មាន Specs ទេ យើងយក Description មកកាត់បង្ហាញត្រឹម ៤ បន្ទាត់ជំនួសវិញ -->
-    <p v-else-if="product.description" class="text-sm text-slate-600 mb-8 line-clamp-4 leading-relaxed">
+    <p
+      v-else-if="product.description"
+      class="text-sm text-slate-600 mb-8 line-clamp-4 leading-relaxed"
+    >
       {{ product.description }}
     </p>
 
     <!-- 🌟 ករណីទី ៣ (ការពារទុកមុន)៖ Admin ភ្លេចបញ្ចូលទាំង Specs ភ្លេចទាំង Description -->
-    <div v-else class="text-sm text-slate-500 italic mb-8 p-4 bg-slate-50 border border-dashed border-slate-200 rounded-lg flex items-center gap-2">
-      <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+    <div
+      v-else
+      class="text-sm text-slate-500 italic mb-8 p-4 bg-slate-50 border border-dashed border-slate-200 rounded-lg flex items-center gap-2"
+    >
+      <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        ></path>
+      </svg>
       No key features or description available for this product.
     </div>
 
@@ -96,11 +107,13 @@
     <!-- ប៊ូតុង Add to Cart / Buy Now -->
     <div class="mb-8">
       <div class="flex flex-wrap items-center gap-4 mb-8">
-        
-        <div class="flex items-center border-2 border-slate-200 rounded-lg h-12 w-32" :class="{'opacity-50 pointer-events-none': product.current_stock <= 0}">
+        <div
+          class="flex items-center border-2 border-slate-200 rounded-lg h-12 w-32"
+          :class="{ 'opacity-50 pointer-events-none': product.current_stock <= 0 }"
+        >
           <button
             @click="quantity > 1 ? quantity-- : null"
-            class="w-10 h-full flex items-center justify-center text-slate-500 hover:text-ikit-blue hover:bg-slate-50 transition-colors"
+            class="w-10 h-full flex items-center justify-center text-slate-500 hover:text-ikit-blue hover:bg-slate-50 transition-colors cursor-pointer"
           >
             -
           </button>
@@ -112,7 +125,7 @@
           />
           <button
             @click="quantity < product.current_stock ? quantity++ : null"
-            class="w-10 h-full flex items-center justify-center text-slate-500 hover:text-ikit-blue hover:bg-slate-50 transition-colors"
+            class="w-10 h-full flex items-center justify-center text-slate-500 hover:text-ikit-blue hover:bg-slate-50 transition-colors cursor-pointer"
           >
             +
           </button>
@@ -121,26 +134,62 @@
         <button
           @click="addToCart"
           :disabled="product.current_stock <= 0 || isAdding"
-          :class="product.current_stock > 0 ? 'bg-white border-ikit-blue text-ikit-blue hover:bg-ikit-blue hover:text-white' : 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed'"
+          :class="
+            product.current_stock > 0
+              ? 'bg-white border-ikit-blue text-ikit-blue hover:bg-ikit-blue hover:text-white'
+              : 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed'
+          "
           class="flex-1 h-12 border-2 font-bold cursor-pointer rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
         >
           <i v-if="isAdding" class="fas fa-spinner fa-spin"></i>
           <template v-else>
-            <svg v-if="product.current_stock > 0" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            <svg
+              v-if="product.current_stock > 0"
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+              ></path>
             </svg>
             <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+              ></path>
             </svg>
             {{ product.current_stock > 0 ? 'Add to Cart' : 'Out of Stock' }}
           </template>
         </button>
 
         <button
-          class="h-12 w-12 border-2 border-slate-200 text-slate-500 hover:text-ikit-red hover:border-ikit-red hover:bg-red-50 rounded-lg flex items-center justify-center transition-colors cursor-pointer"
+          @click="handleToggleFavorite"
+          :class="
+            favoriteStore.isFavorite(product.id)
+              ? 'border-ikit-red text-ikit-red bg-red-50'
+              : 'border-slate-200 text-slate-500 hover:text-ikit-red hover:border-ikit-red hover:bg-red-50'
+          "
+          class="h-12 w-12 border-2 rounded-lg flex items-center justify-center transition-colors cursor-pointer"
         >
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+          <svg
+            class="w-6 h-6 transition-all duration-300"
+            :fill="favoriteStore.isFavorite(product.id) ? 'currentColor' : 'none'"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+            ></path>
           </svg>
         </button>
       </div>
@@ -148,7 +197,11 @@
       <button
         @click="buyNow"
         :disabled="product.current_stock <= 0"
-        :class="product.current_stock > 0 ? 'bg-ikit-red hover:bg-red-700 text-white transform hover:-translate-y-0.5' : 'bg-slate-300 text-slate-500 cursor-not-allowed'"
+        :class="
+          product.current_stock > 0
+            ? 'bg-ikit-red hover:bg-red-700 text-white transform hover:-translate-y-0.5'
+            : 'bg-slate-300 text-slate-500 cursor-not-allowed'
+        "
         class="w-full h-14 cursor-pointer font-extrabold rounded-lg shadow-md transition-all text-lg mb-6"
       >
         BUY NOW
@@ -188,6 +241,7 @@ import { ref, defineProps, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { useCartStore } from '@/stores/cartStore'
+import { useFavoriteStore } from '@/stores/favoriteStore'
 import Swal from 'sweetalert2'
 
 // ទទួលយកទិន្នន័យពី ProductDetailView
@@ -201,6 +255,7 @@ const props = defineProps({
 const router = useRouter()
 const authStore = useAuthStore()
 const cartStore = useCartStore()
+const favoriteStore = useFavoriteStore()
 
 const quantity = ref(1)
 const isAdding = ref(false)
@@ -216,16 +271,14 @@ const formatPrice = (price) => {
 
 // ជំនួស shortSpecs ចាស់ ដោយ smartShortSpecs នេះ
 const smartShortSpecs = computed(() => {
-  if (!props.product || !props.product.specs || props.product.specs.length === 0) return [];
+  if (!props.product || !props.product.specs || props.product.specs.length === 0) return []
 
-  const rawSpecs = props.product.specs;
-  const result = [];
+  const rawSpecs = props.product.specs
+  const result = []
 
   const findSpec = (keywords) => {
-    return rawSpecs.find(s => 
-      keywords.some(k => s.spec_key.toLowerCase() === k.toLowerCase())
-    );
-  };
+    return rawSpecs.find((s) => keywords.some((k) => s.spec_key.toLowerCase() === k.toLowerCase()))
+  }
 
   const targetSpecs = [
     { label: 'Processor', keywords: ['CPU', 'Processor'] },
@@ -233,15 +286,15 @@ const smartShortSpecs = computed(() => {
     { label: 'Storage', keywords: ['Storage', 'SSD', 'HDD', 'Hard Drive'] },
     { label: 'Graphics', keywords: ['Graphic', 'Graphics', 'VGA', 'GPU'] },
     { label: 'Display', keywords: ['Display', 'Screen'] },
-    { label: 'OS', keywords: ['OS', 'Operating System'] }
-  ];
+    { label: 'OS', keywords: ['OS', 'Operating System'] },
+  ]
 
-  targetSpecs.forEach(target => {
-    const found = findSpec(target.keywords);
+  targetSpecs.forEach((target) => {
+    const found = findSpec(target.keywords)
     if (found) {
-      result.push({ key: target.label, value: found.spec_value });
+      result.push({ key: target.label, value: found.spec_value })
     }
-  });
+  })
 
   // ==========================================
   // 🌟 ការពារករណីជាទំនិញប្រភេទផ្សេង (Monitor, Accessories)
@@ -249,13 +302,13 @@ const smartShortSpecs = computed(() => {
   // ប្រសិនបើកូដរក CPU, RAM មិនឃើញសោះ (result.length ស្មើ 0)
   if (result.length === 0) {
     // យើងគ្រាន់តែកាត់យកទិន្នន័យ ៥ បន្ទាត់ដំបូងគេបង្អស់មកបង្ហាញ
-    return rawSpecs.slice(0, 5).map(spec => ({
+    return rawSpecs.slice(0, 5).map((spec) => ({
       key: spec.spec_key,
-      value: spec.spec_value
-    }));
+      value: spec.spec_value,
+    }))
   }
 
-  return result;
+  return result
 })
 
 const addToCart = async () => {
@@ -268,11 +321,11 @@ const addToCart = async () => {
       confirmButtonColor: '#2563eb',
       cancelButtonColor: '#94a3b8',
       confirmButtonText: 'Go to Login Page',
-      cancelButtonText: 'Close'
+      cancelButtonText: 'Close',
     }).then((result) => {
-      if (result.isConfirmed) router.push('/login') 
+      if (result.isConfirmed) router.push('/login')
     })
-    return 
+    return
   }
 
   isAdding.value = true
@@ -281,12 +334,61 @@ const addToCart = async () => {
 
   if (result.success) {
     Swal.fire({
-      toast: true, position: 'top-end', icon: 'success', title: 'Successfully added to cart!', showConfirmButton: false, timer: 1500
+      toast: true,
+      position: 'top-end',
+      icon: 'success',
+      title: 'Successfully added to cart!',
+      showConfirmButton: false,
+      timer: 1500,
     })
     // Reset ចំនួនមកលេខ ១ វិញបន្ទាប់ពី Add ជោគជ័យ
     quantity.value = 1
   } else {
     Swal.fire('Failed', result.error || 'Could not add to cart.', 'error')
+  }
+}
+
+const handleToggleFavorite = async () => {
+  // ឆែកមើលការ Login ជាមុនសិន
+  if (!authStore.isAuthenticated) {
+    Swal.fire({
+      title: 'Please Login',
+      text: 'You need to have an account to add items to your wishlist!',
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonColor: '#2563eb',
+      cancelButtonColor: '#94a3b8',
+      confirmButtonText: 'Go to Login Page',
+      cancelButtonText: 'Close'
+    }).then((result) => {
+      if (result.isConfirmed) router.push('/login') 
+    })
+    return 
+  }
+
+  // បាញ់ទៅកាន់ Store (Store នឹងរ៉ាប់រងការ Update UI ភ្លាមៗ និងហៅ API ទៅ Backend ដោយស្ងាត់ៗ)
+  const result = await favoriteStore.toggleFavorite(props.product)
+
+  // ប្រសិនបើមានបញ្ហាពី Server (ឧទាហរណ៍៖ ដាច់អ៊ីនធឺណិត) ទើបយើងលោតប្រាប់
+  if (!result.success) {
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: 'error',
+      title: result.error || 'Failed to update wishlist',
+      showConfirmButton: false,
+      timer: 2000
+    })
+  } else {
+    // លោតសារជោគជ័យតូចមួយនៅជ្រុងខាងស្តាំ
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: 'success',
+      title: result.is_favorite ? 'Added to Wishlist!' : 'Removed from Wishlist!',
+      showConfirmButton: false,
+      timer: 1500
+    })
   }
 }
 
