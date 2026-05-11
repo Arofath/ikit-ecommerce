@@ -94,11 +94,10 @@
     <div class="border-t border-slate-200 mb-6"></div>
 
     <!-- ប៊ូតុង Add to Cart / Buy Now -->
-    <!-- លាក់ប៊ូតុងប្រសិនបើអស់ស្តុក -->
-    <div v-if="product.current_stock > 0 || product.is_active">
+    <div class="mb-8">
       <div class="flex flex-wrap items-center gap-4 mb-8">
-        <!-- Quantity Selector -->
-        <div class="flex items-center border-2 border-slate-200 rounded-lg h-12 w-32">
+        
+        <div class="flex items-center border-2 border-slate-200 rounded-lg h-12 w-32" :class="{'opacity-50 pointer-events-none': product.current_stock <= 0}">
           <button
             @click="quantity > 1 ? quantity-- : null"
             class="w-10 h-full flex items-center justify-center text-slate-500 hover:text-ikit-blue hover:bg-slate-50 transition-colors"
@@ -112,7 +111,7 @@
             readonly
           />
           <button
-            @click="quantity++"
+            @click="quantity < product.current_stock ? quantity++ : null"
             class="w-10 h-full flex items-center justify-center text-slate-500 hover:text-ikit-blue hover:bg-slate-50 transition-colors"
           >
             +
@@ -121,37 +120,36 @@
 
         <button
           @click="addToCart"
-          class="flex-1 h-12 bg-white border-2 border-ikit-blue text-ikit-blue hover:bg-ikit-blue hover:text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2"
+          :disabled="product.current_stock <= 0 || isAdding"
+          :class="product.current_stock > 0 ? 'bg-white border-ikit-blue text-ikit-blue hover:bg-ikit-blue hover:text-white' : 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed'"
+          class="flex-1 h-12 border-2 font-bold cursor-pointer rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-            ></path>
-          </svg>
-          Add to Cart
+          <i v-if="isAdding" class="fas fa-spinner fa-spin"></i>
+          <template v-else>
+            <svg v-if="product.current_stock > 0" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+            <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            {{ product.current_stock > 0 ? 'Add to Cart' : 'Out of Stock' }}
+          </template>
         </button>
 
-        <!-- Wishlist Button -->
         <button
-          class="h-12 w-12 border-2 border-slate-200 text-slate-500 hover:text-ikit-red hover:border-ikit-red hover:bg-red-50 rounded-lg flex items-center justify-center transition-colors"
+          class="h-12 w-12 border-2 border-slate-200 text-slate-500 hover:text-ikit-red hover:border-ikit-red hover:bg-red-50 rounded-lg flex items-center justify-center transition-colors cursor-pointer"
         >
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-            ></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
           </svg>
         </button>
       </div>
 
       <button
         @click="buyNow"
-        class="w-full h-14 bg-ikit-red hover:bg-red-700 text-white font-extrabold rounded-lg shadow-md transition-colors text-lg mb-6 transform hover:-translate-y-0.5"
+        :disabled="product.current_stock <= 0"
+        :class="product.current_stock > 0 ? 'bg-ikit-red hover:bg-red-700 text-white transform hover:-translate-y-0.5' : 'bg-slate-300 text-slate-500 cursor-not-allowed'"
+        class="w-full h-14 cursor-pointer font-extrabold rounded-lg shadow-md transition-all text-lg mb-6"
       >
         BUY NOW
       </button>
@@ -187,6 +185,10 @@
 
 <script setup>
 import { ref, defineProps, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/authStore'
+import { useCartStore } from '@/stores/cartStore'
+import Swal from 'sweetalert2'
 
 // ទទួលយកទិន្នន័យពី ProductDetailView
 const props = defineProps({
@@ -196,7 +198,12 @@ const props = defineProps({
   },
 })
 
+const router = useRouter()
+const authStore = useAuthStore()
+const cartStore = useCartStore()
+
 const quantity = ref(1)
+const isAdding = ref(false)
 
 // មុខងារសម្រាប់ធ្វើទម្រង់តម្លៃ (ឧ. 1299 -> 1,299.00)
 const formatPrice = (price) => {
@@ -251,9 +258,36 @@ const smartShortSpecs = computed(() => {
   return result;
 })
 
-const addToCart = () => {
-  console.log(`បន្ថែម ${props.product.name} ចំនួន ${quantity.value} ទៅកន្ត្រក`)
-  // ថ្ងៃក្រោយយើងនឹងហៅ cartStore.addToCart() នៅទីនេះ
+const addToCart = async () => {
+  if (!authStore.isAuthenticated) {
+    Swal.fire({
+      title: 'Please Login',
+      text: 'You need to have an account to purchase items!',
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonColor: '#2563eb',
+      cancelButtonColor: '#94a3b8',
+      confirmButtonText: 'Go to Login Page',
+      cancelButtonText: 'Close'
+    }).then((result) => {
+      if (result.isConfirmed) router.push('/login') 
+    })
+    return 
+  }
+
+  isAdding.value = true
+  const result = await cartStore.addItem(props.product.id, quantity.value)
+  isAdding.value = false
+
+  if (result.success) {
+    Swal.fire({
+      toast: true, position: 'top-end', icon: 'success', title: 'Successfully added to cart!', showConfirmButton: false, timer: 1500
+    })
+    // Reset ចំនួនមកលេខ ១ វិញបន្ទាប់ពី Add ជោគជ័យ
+    quantity.value = 1
+  } else {
+    Swal.fire('Failed', result.error || 'Could not add to cart.', 'error')
+  }
 }
 
 const buyNow = () => {

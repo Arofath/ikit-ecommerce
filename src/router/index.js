@@ -5,6 +5,13 @@ import LoginView from '@/view/LoginView.vue'
 import MainLayout from '@/layouts/MainLayout.vue'
 import HomeView from '@/view/HomeView.vue'
 import ProductDetailView from '@/view/ProductDetailView.vue'
+import ProductListView from '@/view/ProductListView.vue'
+import ProductListTest from '@/view/ProductListTest.vue'
+import AuthView from '@/view/auth/AuthView.vue'
+import GoogleCallbackView from '@/view/auth/GoogleCallbackView.vue'
+import VerifyOtpView from '@/view/auth/VerifyOtpView.vue'
+import ProfileView from '@/view/auth/ProfileView.vue'
+import CartView from '@/view/CartView.vue'
 
 // 🌟 ១. ជួសជុល Warning ទី ២៖ ប្រើមុខងារ h() ជំនួសឲ្យ template
 const DummyView = (name) => ({
@@ -19,36 +26,25 @@ const DummyView = (name) => ({
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    // ==========================================
+    // 🌟 ក្រុមទី ១៖ ទំព័រដែលមាន Header និង Footer
+    // ==========================================
     {
       path: '/',
-      // 🌟 កែប្រែសំបកក្រៅបណ្ដោះអាសន្នទីនេះផងដែរ
       component: MainLayout,
       children: [
         // Public Routes
         { path: '', name: 'Home', component: HomeView },
         {
-          path: '/product/:slug',
+          path: 'product/:slug',
           name: 'ProductDetail',
           component: ProductDetailView,
         },
-        { path: 'products', name: 'Products', component: DummyView('Products') },
-        { path: 'cart', name: 'Cart', component: DummyView('Cart') },
+        { path: 'products', name: 'Products', component: ProductListView },
+        { path: 'services', name: 'Services', component: ProductListTest },
+        { path: 'cart', name: 'Cart', component: CartView },
 
-        // Guest Routes
-        {
-          path: 'login',
-          name: 'Login',
-          component: DummyView('Login'),
-          meta: { requiresGuest: true },
-        },
-        {
-          path: 'register',
-          name: 'Register',
-          component: DummyView('Register'),
-          meta: { requiresGuest: true },
-        },
-
-        // Protected Routes
+        // Protected Routes (តម្រូវឱ្យ Login)
         {
           path: 'checkout',
           name: 'Checkout',
@@ -58,12 +54,51 @@ const router = createRouter({
         {
           path: 'profile',
           name: 'Profile',
-          component: DummyView('Profile'),
+          component: ProfileView,
           meta: { requiresAuth: true },
         },
       ],
     },
+
+    // ==========================================
+    // 🌟 ក្រុមទី ២៖ ទំព័រពេញអេក្រង់ (គ្មាន Header & Footer)
+    // ==========================================
+    {
+      path: '/login', // ត្រូវមានសញ្ញា / ពីមុខ ព្រោះវាចេញមកក្រៅហើយ
+      name: 'Login',
+      component: AuthView,
+      meta: { requiresGuest: true },
+    },
+    {
+      path: '/register', // ត្រូវមានសញ្ញា / ពីមុខ
+      name: 'Register',
+      component: AuthView,
+      meta: { requiresGuest: true },
+    },
+    {
+      path: '/auth/google/callback',
+      name: 'GoogleCallback',
+      component: GoogleCallbackView,
+      meta: { requiresGuest: true },
+    },
+    {
+      path: '/verify-otp',
+      name: 'VerifyOtp',
+      component: VerifyOtpView,
+      meta: { requiresGuest: true },
+    },
   ],
+  scrollBehavior(to, from, savedPosition) {
+    // ប្រសិនបើអតិថិជនចុចប៊ូតុង ថយក្រោយ/ទៅមុខ (Back/Forward) នៅលើ Browser
+    // ឱ្យវាត្រឡប់ទៅកន្លែងចាស់ដែលគេធ្លាប់ឈរ
+    if (savedPosition) {
+      return savedPosition
+    }
+    // ករណីផ្សេងទៀតទាំងអស់ (ចុច Link, Refresh, ប្តូរ Route) គឺរុញទៅលើគេបង្អស់
+    else {
+      return { top: 0, behavior: 'smooth' } // បើចង់ឱ្យវាលោតភ្លាមៗ មិនបាច់រអិលទេ អាចលុប behavior ចោលបាន
+    }
+  },
 })
 
 // ==========================================
@@ -83,9 +118,6 @@ router.beforeEach((to, from) => {
     // 🌟 ប្រើពាក្យ return ជំនួសឲ្យ next(...)
     return { name: 'Home' }
   }
-
-  // បើមិនជាប់លក្ខខណ្ឌខាងលើទេ យើងមិនបាច់សរសេរអ្វីទាំងអស់ (ស្មើនឹង next() ពីមុន)
-  // ទំព័រវានឹងលោតចូលដោយស្វ័យប្រវត្តិ
 })
 
 export default router

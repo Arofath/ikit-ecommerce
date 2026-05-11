@@ -1,5 +1,5 @@
 <template>
-  <section class="mb-12 font-sans">
+  <section v-if="isLoading || products.length > 0" class="mb-12 font-sans">
     <div class="flex items-center justify-between mb-6">
       <div class="flex items-center gap-2">
         <svg class="w-7 h-7 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
@@ -7,28 +7,8 @@
             d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
           ></path>
         </svg>
-        <h2 class="text-2xl font-bold text-slate-800">Recommended For You</h2>
+        <h2 class="text-2xl font-bold text-slate-800">Related Products</h2>
       </div>
-
-      <router-link
-        :to="{ path: '/products', query: { filter: 'recommended' } }"
-        class="text-sm font-medium text-ikit-blue hover:text-ikit-dark flex items-center gap-1 group"
-      >
-        View All
-        <svg
-          class="w-4 h-4 group-hover:translate-x-1 transition-transform"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M9 5l7 7-7 7"
-          ></path>
-        </svg>
-      </router-link>
     </div>
 
     <!-- Skeleton -->
@@ -60,28 +40,27 @@
         :to="'/product/' + product.slug"
         class="bg-white border border-slate-200 rounded-lg p-4 hover:shadow-lg hover:border-ikit-blue transition-all group relative flex-col h-full block"
       >
-        <span
-          class="absolute top-3 left-3 bg-orange-500 text-white text-[9px] tracking-wider font-bold px-2 py-1 rounded z-10"
-        >
-          RECOMMENDED
-        </span>
-
         <!-- រូបភាពទំនិញ -->
         <div
           class="aspect-square bg-slate-50 rounded-md mb-4 flex items-center justify-center p-4 overflow-hidden relative"
         >
           <img
-            :src="product.thumbnail ? product.thumbnail.image_path : '/default-placeholder.png'"
+            :src="
+              product.images && product.images.length > 0
+                ? product.images[0]
+                : '/default-placeholder.png'
+            "
             :alt="product.name"
             class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
           />
+          <!-- ចំណាំ៖ ប៊ូតុង Add to Cart អាចនឹងមានបញ្ហាពេលស្ថិតក្នុង <router-link> ។ 
+                ដើម្បីការពារកុំឱ្យពេលចុច Add to Cart វារត់ទៅ Detail 
+                យើងត្រូវថែម @click.prevent="addToCart(product)" -->
           <button
-            @click.prevent="handleAddToCart(product)"
-            :disabled="addingProductId === product.id"
-            class="absolute cursor-pointer -bottom-10 group-hover:bottom-2 left-1/2 -translate-x-1/2 bg-ikit-blue hover:bg-ikit-dark text-white text-xs font-bold py-2 px-4 rounded transition-all duration-300 w-[90%] shadow-md z-20 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+            @click.prevent="console.log('Add to cart clicked')"
+            class="absolute -bottom-10 group-hover:bottom-2 left-1/2 -translate-x-1/2 bg-ikit-blue hover:bg-ikit-dark text-white text-xs font-bold py-2 px-4 rounded transition-all duration-300 w-[90%] shadow-md z-20"
           >
-            <i v-if="addingProductId === product.id" class="fas fa-spinner fa-spin"></i>
-            <span v-else>Add to Cart</span>
+            Add to Cart
           </button>
         </div>
 
@@ -106,11 +85,7 @@
 </template>
 
 <script setup>
-import { ref, defineProps } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/authStore'
-import { useCartStore } from '@/stores/cartStore'
-import Swal from 'sweetalert2'
+import { defineProps } from 'vue'
 
 // 🌟 ទទួលទិន្នន័យ products ពីទំព័រ HomeView
 defineProps({
@@ -124,51 +99,4 @@ defineProps({
     default: false,
   },
 })
-
-const router = useRouter()
-const authStore = useAuthStore()
-const cartStore = useCartStore()
-
-// អថេរសម្រាប់ចំណាំ ID ទំនិញដែលកំពុងចុច ដើម្បីឱ្យវាវិល Loading ត្រូវប៊ូតុង
-const addingProductId = ref(null)
-
-const handleAddToCart = async (product) => {
-  // ១. ឆែកមើលថាគាត់បាន Login ហើយឬនៅ?
-  if (!authStore.isAuthenticated) {
-    Swal.fire({
-      title: 'Please Login',
-      text: 'You need to have an account to purchase items!',
-      icon: 'info',
-      showCancelButton: true,
-      confirmButtonColor: '#2563eb',
-      cancelButtonColor: '#94a3b8',
-      confirmButtonText: 'Go to Login Page',
-      cancelButtonText: 'Close',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        router.push('/login')
-      }
-    })
-    return
-  }
-
-  // ២. បើកសញ្ញា Loading និងបាញ់ API ទៅ Backend
-  addingProductId.value = product.id
-  const result = await cartStore.addItem(product.id, 1)
-  addingProductId.value = null // បិទ Loading វិញពេលដើរចប់
-
-  // ៣. បង្ហាញលទ្ធផល
-  if (result.success) {
-    Swal.fire({
-      toast: true,
-      position: 'top-end',
-      icon: 'success',
-      title: 'Successfully added to cart!',
-      showConfirmButton: false,
-      timer: 1500,
-    })
-  } else {
-    Swal.fire('Failed', result.error || 'Could not add to cart.', 'error')
-  }
-}
 </script>

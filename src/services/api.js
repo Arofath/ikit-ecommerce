@@ -35,13 +35,17 @@ api.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       console.warn('Guest user or token expired.')
 
-      // លុបទិន្នន័យចាស់ចោល ដើម្បីឱ្យប្រាកដថាប្រព័ន្ធស្អាត
+      // ១. លុបក្នុង LocalStorage
       localStorage.removeItem('access_token')
       localStorage.removeItem('user_info')
 
-      // 🌟 ចំណុចសំខាន់៖ យើងមិនប្រើ window.location.href = '/login' នៅទីនេះទេ!
-      // យើងទុកឱ្យ Component (ឧទាហរណ៍៖ ទំព័រ Checkout ឬ Profile) ជាអ្នកចាត់ចែង
-      // បើភ្ញៀវចូលមើលទំព័រហាមឃាត់ ចាំ Component នោះបញ្ជូនគាត់ទៅ Login ដោយខ្លួនឯង។
+      // 🌟 ២. ហៅ Pinia Store មកលុប State ចោលភ្លាមៗ ដើម្បីឱ្យ Header លោតដូររូបរាង
+      import('@/stores/authStore')
+        .then(({ useAuthStore }) => {
+          const authStore = useAuthStore()
+          authStore.clearAuthData() // យើងនឹងបង្កើតមុខងារនេះក្នុង Store ពេលក្រោយ
+        })
+        .catch((err) => console.error('Error loading auth store', err))
     }
 
     return Promise.reject(error)
