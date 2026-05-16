@@ -194,17 +194,18 @@
         </button>
       </div>
 
-      <button
+<button
         @click="buyNow"
-        :disabled="product.current_stock <= 0"
+        :disabled="product.current_stock <= 0 || isAdding"
         :class="
-          product.current_stock > 0
-            ? 'bg-ikit-red hover:bg-red-700 text-white transform hover:-translate-y-0.5'
+          product.current_stock > 0 && !isAdding
+            ? 'bg-ikit-red hover:bg-red-700 text-white transform hover:-translate-y-0.5 cursor-pointer'
             : 'bg-slate-300 text-slate-500 cursor-not-allowed'
         "
-        class="w-full h-14 cursor-pointer font-extrabold rounded-lg shadow-md transition-all text-lg mb-6"
+        class="w-full h-14 font-extrabold rounded-lg shadow-md transition-all text-lg mb-6 flex items-center justify-center gap-2"
       >
-        BUY NOW
+        <i v-if="isAdding" class="fas fa-spinner fa-spin"></i>
+        {{ isAdding ? 'PROCESSING...' : 'BUY NOW' }}
       </button>
     </div>
 
@@ -392,8 +393,56 @@ const handleToggleFavorite = async () => {
   }
 }
 
-const buyNow = () => {
-  console.log(`ទិញ ${props.product.name} ភ្លាមៗ`)
-  // ថ្ងៃក្រោយអាចលោតទៅទំព័រ Checkout តែម្តង
-}
+const buyNow = async () => {
+  // ១. ឆែកមើលការ Login ជាមុនសិន
+  if (!authStore.isAuthenticated) {
+    Swal.fire({
+      title: 'Please Login',
+      text: 'You need to have an account to purchase items!',
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonColor: '#2563eb',
+      cancelButtonColor: '#94a3b8',
+      confirmButtonText: 'Go to Login Page',
+      cancelButtonText: 'Close',
+    }).then((result) => {
+      if (result.isConfirmed) router.push('/login')
+    })
+    return
+  }
+
+  // ២. ការពារក្រែងលោទំនិញអស់ស្តុក
+  if (props.product.current_stock <= 0) {
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: 'error',
+      title: 'This product is out of stock.',
+      showConfirmButton: false,
+      timer: 2000
+    });
+    return;
+  }
+
+  try {
+    isAdding.value = true; // បើក Loading វិលៗ
+
+    // ៣. បន្ថែមទំនិញចូលកន្ត្រក (ប្រើ Function addItem របស់ CartStore ដូចខាង Add to cart ដែរ)
+    const result = await cartStore.addItem(props.product.id, quantity.value);
+    
+    isAdding.value = false; // បិទ Loading
+
+    if (result.success) {
+      // ៤. បើចូលកន្ត្រកជោគជ័យ រុញគាត់ទៅកាន់ទំព័រ Checkout តែម្តង
+      router.push('/checkout');
+    } else {
+      Swal.fire('Failed', result.error || 'Could not process your request.', 'error');
+    }
+
+  } catch (error) {
+    isAdding.value = false;
+    console.error('Buy Now Error:', error);
+    Swal.fire('Error', 'Something went wrong. Please try again.', 'error');
+  }
+};
 </script>
