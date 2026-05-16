@@ -20,15 +20,23 @@
     <div class="border-t border-slate-100 pt-4 mb-6">
       <div class="flex justify-between items-center">
         <span class="text-lg font-bold text-slate-800">Total</span>
-        <span class="text-2xl font-extrabold text-blue-600">${{ cartStore.totalPrice.toFixed(2) }}</span>
+        <span class="text-2xl font-extrabold text-blue-600"
+          >${{ cartStore.totalPrice.toFixed(2) }}</span
+        >
       </div>
     </div>
 
-    <button
-      class="w-full py-4 bg-blue-600 text-white rounded-xl font-semibold shadow-lg shadow-blue-600/30 hover:bg-blue-700 hover:-translate-y-0.5 transition-all flex justify-center items-center gap-2"
+    <router-link
+      to="/checkout"
+      :class="[
+        'w-full py-4 rounded-xl font-semibold transition-all flex justify-center items-center gap-2',
+        cartStore.cartItems.length === 0 // 🌟 កន្លែងដែលត្រូវកែ៖ ដូរពី items ទៅជា cartItems វិញ
+          ? 'bg-gray-400 text-gray-200 cursor-not-allowed pointer-events-none'
+          : 'bg-blue-600 text-white shadow-lg shadow-blue-600/30 hover:bg-blue-700 hover:-translate-y-0.5',
+      ]"
     >
       Proceed to Checkout <i class="fas fa-arrow-right"></i>
-    </button>
+    </router-link>
 
     <div class="mt-4 text-center">
       <router-link to="/products" class="text-sm text-blue-600 font-medium hover:underline">

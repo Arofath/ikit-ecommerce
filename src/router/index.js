@@ -10,9 +10,12 @@ import ProductListTest from '@/view/ProductListTest.vue'
 import AuthView from '@/view/auth/AuthView.vue'
 import GoogleCallbackView from '@/view/auth/GoogleCallbackView.vue'
 import VerifyOtpView from '@/view/auth/VerifyOtpView.vue'
-import ProfileView from '@/view/auth/ProfileView.vue'
+import ProfileView from '@/view/profile/ProfileView.vue'
 import CartView from '@/view/CartView.vue'
 import WishlistView from '@/view/WishlistView.vue'
+import CheckoutView from '@/view/checkout/CheckoutView.vue'
+import CheckoutSuccessView from '@/view/checkout/CheckoutSuccessView.vue'
+import MyOrdersView from '@/view/profile/MyOrdersView.vue'
 
 // 🌟 ១. ជួសជុល Warning ទី ២៖ ប្រើមុខងារ h() ជំនួសឲ្យ template
 const DummyView = (name) => ({
@@ -55,13 +58,25 @@ const router = createRouter({
         {
           path: 'checkout',
           name: 'Checkout',
-          component: DummyView('Checkout'),
+          component: CheckoutView,
+          meta: { requiresAuth: true },
+        },
+        {
+          path: '/checkout/success',
+          name: 'CheckoutSuccess',
+          component: CheckoutSuccessView,
           meta: { requiresAuth: true },
         },
         {
           path: 'profile',
           name: 'Profile',
           component: ProfileView,
+          meta: { requiresAuth: true },
+        },
+        {
+          path: 'my-orders',
+          name: 'MyOrders',
+          component: MyOrdersView,
           meta: { requiresAuth: true },
         },
       ],
