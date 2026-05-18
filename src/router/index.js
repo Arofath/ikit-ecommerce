@@ -17,6 +17,7 @@ import CheckoutView from '@/view/checkout/CheckoutView.vue'
 import CheckoutSuccessView from '@/view/checkout/CheckoutSuccessView.vue'
 import MyOrdersView from '@/view/profile/MyOrdersView.vue'
 import ContactView from '@/view/ContactView.vue'
+import ServicesView from '@/view/ServicesView.vue'
 
 // 🌟 ១. ជួសជុល Warning ទី ២៖ ប្រើមុខងារ h() ជំនួសឲ្យ template
 const DummyView = (name) => ({
@@ -46,7 +47,7 @@ const router = createRouter({
           component: ProductDetailView,
         },
         { path: 'products', name: 'Products', component: ProductListView },
-        { path: 'services', name: 'Services', component: ProductListTest },
+        { path: 'services', name: 'Services', component: ServicesView },
         { path: 'contact', name: 'Contact', component: ContactView },
 
         // Protected Routes (តម្រូវឱ្យ Login)

@@ -20,24 +20,24 @@
           class="hover:text-white transition-colors border-b-2 border-transparent hover:border-white py-4 opacity-90 hover:opacity-100"
           >Services</router-link
         >
-        <router-link
+        <!-- <router-link
           to="/warranty"
           exact-active-class="!border-white !opacity-100 font-bold"
           class="hover:text-white transition-colors border-b-2 border-transparent hover:border-white py-4 opacity-90 hover:opacity-100"
           >Check Warranty</router-link
-        >
+        > -->
         <router-link
           to="/contact"
           exact-active-class="!border-white !opacity-100 font-bold"
           class="hover:text-white transition-colors border-b-2 border-transparent hover:border-white py-4 opacity-90 hover:opacity-100"
           >Contact Us</router-link
         >
-        <router-link
+        <!-- <router-link
           to="/about"
           exact-active-class="!border-white !opacity-100 font-bold"
           class="hover:text-white transition-colors border-b-2 border-transparent hover:border-white py-4 opacity-90 hover:opacity-100"
           >About Us</router-link
-        >
+        > -->
       </nav>
 
       <button
@@ -108,7 +108,7 @@
                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
               ></path>
             </svg>
-            
+
             <span
               v-if="cartStore.totalItems > 0"
               class="absolute -top-2 -right-2 min-w-4 h-4 px-1 bg-ikit-red text-white text-[10px] font-bold flex items-center justify-center rounded-full border border-white"
@@ -116,8 +116,10 @@
               {{ cartStore.totalItems }}
             </span>
           </div>
-          
-          <span class="hidden sm:block text-sm font-extrabold">${{ cartStore.totalPrice.toFixed(2) }}</span>
+
+          <span class="hidden sm:block text-sm font-extrabold"
+            >${{ cartStore.totalPrice.toFixed(2) }}</span
+          >
         </router-link>
 
         <div class="w-px h-6 bg-blue-400/50 hidden sm:block mx-1"></div>
@@ -139,14 +141,23 @@
         </router-link>
 
         <div v-else class="flex items-center gap-1 sm:gap-3">
-          
           <div class="relative">
             <button
               @click="toggleNotification"
               class="relative hover:bg-black/10 p-2 rounded-lg transition cursor-pointer group focus:outline-none"
             >
-              <svg class="w-6 h-6 group-hover:text-blue-100 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+              <svg
+                class="w-6 h-6 group-hover:text-blue-100 transition-colors"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                ></path>
               </svg>
               <span
                 v-if="notificationStore.unreadCount > 0"
@@ -168,11 +179,13 @@
                 v-if="isNotificationOpen"
                 class="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50 text-slate-800"
               >
-                <div class="flex items-center justify-between px-4 py-3 border-b border-slate-100 bg-slate-50/50">
+                <div
+                  class="flex items-center justify-between px-4 py-3 border-b border-slate-100 bg-slate-50/50"
+                >
                   <h3 class="font-bold text-sm">Notifications</h3>
-                  <button 
-                    v-if="notificationStore.unreadCount > 0" 
-                    @click="notificationStore.markAllAsRead" 
+                  <button
+                    v-if="notificationStore.unreadCount > 0"
+                    @click="notificationStore.markAllAsRead"
                     class="text-xs text-blue-600 hover:text-blue-800 font-medium transition-colors"
                   >
                     Mark all as read
@@ -180,39 +193,64 @@
                 </div>
 
                 <div class="max-h-80 overflow-y-auto">
-                  <div v-if="notificationStore.notifications.length === 0" class="p-8 text-center text-slate-500">
-                    <span class="material-symbols-outlined text-4xl opacity-20 mb-2 block">notifications_off</span>
+                  <div
+                    v-if="notificationStore.notifications.length === 0"
+                    class="p-8 text-center text-slate-500"
+                  >
+                    <span class="material-symbols-outlined text-4xl opacity-20 mb-2 block"
+                      >notifications_off</span
+                    >
                     <p class="text-sm">No new notifications.</p>
                   </div>
 
                   <template v-else>
-                    <div 
-                      v-for="notif in notificationStore.notifications.slice(0, 5)" 
+                    <div
+                      v-for="notif in notificationStore.notifications.slice(0, 5)"
                       :key="notif.id"
                       @click="handleNotificationClick(notif)"
                       class="px-4 py-3 border-b border-slate-50 hover:bg-slate-50 cursor-pointer transition-colors relative"
                       :class="!notif.read_at ? 'bg-blue-50/30' : ''"
                     >
                       <div class="flex gap-3">
-                        <div class="w-8 h-8 rounded-full shrink-0 flex items-center justify-center mt-0.5" :class="!notif.read_at ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-500'">
+                        <div
+                          class="w-8 h-8 rounded-full shrink-0 flex items-center justify-center mt-0.5"
+                          :class="
+                            !notif.read_at
+                              ? 'bg-blue-100 text-blue-600'
+                              : 'bg-slate-100 text-slate-500'
+                          "
+                        >
                           <i class="fas fa-box text-sm"></i>
                         </div>
                         <div class="flex-1 min-w-0">
-                          <p class="text-sm text-slate-800" :class="!notif.read_at ? 'font-bold' : 'font-medium'">
+                          <p
+                            class="text-sm text-slate-800"
+                            :class="!notif.read_at ? 'font-bold' : 'font-medium'"
+                          >
                             {{ notif.data.message }}
                           </p>
                           <p class="text-xs text-slate-500 mt-1 flex items-center gap-1">
                             <i class="far fa-clock"></i> {{ formatTime(notif.created_at) }}
                           </p>
                         </div>
-                        <div v-if="!notif.read_at" class="w-2 h-2 rounded-full bg-blue-500 mt-1.5 shrink-0"></div>
+                        <div
+                          v-if="!notif.read_at"
+                          class="w-2 h-2 rounded-full bg-blue-500 mt-1.5 shrink-0"
+                        ></div>
                       </div>
                     </div>
                   </template>
                 </div>
-                
-                <div v-if="notificationStore.notifications.length > 0" class="p-2 bg-slate-50/50 border-t border-slate-100 text-center">
-                  <router-link to="/my-orders" @click="isNotificationOpen = false" class="text-xs font-bold text-slate-600 hover:text-blue-600 transition-colors">
+
+                <div
+                  v-if="notificationStore.notifications.length > 0"
+                  class="p-2 bg-slate-50/50 border-t border-slate-100 text-center"
+                >
+                  <router-link
+                    to="/my-orders"
+                    @click="isNotificationOpen = false"
+                    class="text-xs font-bold text-slate-600 hover:text-blue-600 transition-colors"
+                  >
                     View All Orders
                   </router-link>
                 </div>
@@ -324,20 +362,20 @@
         class="px-6 py-4 border-b border-slate-100 border-l-4 hover:bg-slate-50 hover:text-ikit-blue transition-colors"
         >Services</router-link
       >
-      <router-link
+      <!-- <router-link
         @click="closeMobileMenu"
         to="/warranty"
         exact-active-class="bg-slate-50 text-ikit-blue font-bold border-l-4 !border-ikit-blue"
         class="px-6 py-4 border-b border-slate-100 border-l-4 hover:bg-slate-50 hover:text-ikit-blue transition-colors"
         >Check Warranty</router-link
-      >
-      <router-link
+      > -->
+      <!-- <router-link
         @click="closeMobileMenu"
         to="/about"
         exact-active-class="bg-slate-50 text-ikit-blue font-bold border-l-4 !border-ikit-blue"
         class="px-6 py-4 border-b border-slate-100 border-l-4 hover:bg-slate-50 hover:text-ikit-blue transition-colors"
         >About Us</router-link
-      >
+      > -->
       <router-link
         @click="closeMobileMenu"
         to="/contact"
@@ -350,13 +388,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
 import { useCartStore } from '@/stores/cartStore'
 import { useFavoriteStore } from '@/stores/favoriteStore'
 import { useNotificationStore } from '@/stores/notificationStore'
-import { useRouter, useRoute } from 'vue-router'
 import Swal from 'sweetalert2'
+import { onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 const authStore = useAuthStore()
 const cartStore = useCartStore()
@@ -388,12 +426,17 @@ const toggleProfile = () => {
 
 const formatTime = (dateStr) => {
   if (!dateStr) return ''
-  return new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }).format(new Date(dateStr))
+  return new Intl.DateTimeFormat('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(dateStr))
 }
 
 const handleNotificationClick = async (notif) => {
   isNotificationOpen.value = false
-  
+
   // ហៅមុខងារ Mark as read បើមិនទាន់បានអាន
   if (!notif.read_at) {
     await notificationStore.markAsRead(notif.id)
@@ -402,15 +445,15 @@ const handleNotificationClick = async (notif) => {
   // 🌟 លក្ខខណ្ឌទី ១៖ បើវាជាដំណឹងទាក់ទងនឹងការ Update Status
   if (notif.data && notif.data.type === 'status_update' && notif.data.status) {
     // រុញទៅទំព័រ My Orders ហើយបោះ Status តាម URL (ឧ. /my-orders?status=SHIPPED)
-    router.push({ 
-      path: '/my-orders', 
-      query: { status: notif.data.status } 
+    router.push({
+      path: '/my-orders',
+      query: { status: notif.data.status },
     })
-  } 
+  }
   // 🌟 លក្ខខណ្ឌទី ២៖ បើជាដំណឹងផ្សេង (ឧ. Payment) តែមាន order_id អាចឱ្យទៅមើលវិក្កយបត្រ
   else if (notif.data && notif.data.order_id) {
     router.push(`/checkout/success?order_id=${notif.data.order_id}`)
-  } 
+  }
   // 🌟 លក្ខខណ្ឌទី ៣៖ ទូទៅ
   else {
     router.push('/my-orders')
@@ -427,8 +470,8 @@ const handleLogout = () => {
 
   // បង្ហាញ Popup សួរមុននឹងលុប
   Swal.fire({
-title: 'Are you sure you want to log out?',
-    text: "You can log back in at any time!",
+    title: 'Are you sure you want to log out?',
+    text: 'You can log back in at any time!',
     icon: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#2563eb', // Theme blue
@@ -437,11 +480,10 @@ title: 'Are you sure you want to log out?',
     cancelButtonText: 'Cancel',
     customClass: {
       popup: 'rounded-2xl', // Smooth rounded corners
-    }
+    },
   }).then(async (result) => {
     // បើគាត់ចុច 'យល់ព្រម'
     if (result.isConfirmed) {
-      
       // ១. ហៅមុខងារ logout ពី Store (លុប Token ទាំងសងខាង)
       await authStore.logout()
 
@@ -460,7 +502,7 @@ title: 'Are you sure you want to log out?',
       // បើគាត់កំពុងឈរលើទំព័រឯកជន (ដូចជា /profile, /orders) ត្រូវរុញទៅ Home ('/')
       if (route.meta.requiresAuth) {
         router.push('/')
-      } 
+      }
       // បើគាត់កំពុងនៅ Home ឬ Products ស្រាប់ គឺមិនបាច់រុញទៅណាទេ ទុកគាត់នៅហ្នឹងហើយ (ទំព័រនឹងលោតដូរ Header ខ្លួនឯង)
     }
   })
@@ -474,32 +516,35 @@ onMounted(() => {
     cartStore.fetchCart()
     favoriteStore.fetchFavorites()
     notificationStore.fetchNotifications()
-    
+
     // 🌟 បន្ថែមរាល់ ១ នាទី (60000ms) ឱ្យវាលបទៅឆែកមើល Notification ថ្មីដោយស្ងាត់ៗ
     pollingTimer = setInterval(() => {
       if (authStore.isAuthenticated) {
-         notificationStore.fetchNotifications()
+        notificationStore.fetchNotifications()
       }
     }, 60000)
   }
 })
 
 // 🌟 ចាប់មើលពេលគាត់ Login ជោគជ័យ ឱ្យវាហៅ API ទាញទិន្នន័យកន្ត្រកមកបង្ហាញភ្លាមៗ
-watch(() => authStore.isAuthenticated, (isAuth) => {
-  if (!isAuth && pollingTimer) {
-     clearInterval(pollingTimer)
-  }
+watch(
+  () => authStore.isAuthenticated,
+  (isAuth) => {
+    if (!isAuth && pollingTimer) {
+      clearInterval(pollingTimer)
+    }
 
-  if (isAuth) {
-    cartStore.fetchCart()
-    favoriteStore.fetchFavorites() 
-    notificationStore.fetchNotifications()
-  } else {
-    // សម្អាតពេល Logout
-    cartStore.cart = { total_items: 0, total_cart_price: 0, items: [] }
-    favoriteStore.favorites = [] 
-    notificationStore.notifications = [] // សម្អាត Notification
-    notificationStore.unreadCount = 0
-  }
-})
+    if (isAuth) {
+      cartStore.fetchCart()
+      favoriteStore.fetchFavorites()
+      notificationStore.fetchNotifications()
+    } else {
+      // សម្អាតពេល Logout
+      cartStore.cart = { total_items: 0, total_cart_price: 0, items: [] }
+      favoriteStore.favorites = []
+      notificationStore.notifications = [] // សម្អាត Notification
+      notificationStore.unreadCount = 0
+    }
+  },
+)
 </script>
