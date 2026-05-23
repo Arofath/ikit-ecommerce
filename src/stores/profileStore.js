@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/authStore'
 export const useProfileStore = defineStore('profile', {
   state: () => ({
     isLoading: false,
+    isUploadingImage: false,
     error: null,
   }),
 
@@ -54,7 +55,7 @@ export const useProfileStore = defineStore('profile', {
 
     // 🌟 ៣. បញ្ចូលរូបភាព Profile ថ្មី
     async uploadImage(file) {
-      this.isLoading = true
+      this.isUploadingImage = true
       this.error = null
       try {
         const response = await profileService.uploadImage(file)
@@ -70,7 +71,7 @@ export const useProfileStore = defineStore('profile', {
         this.handleError(err)
         return { success: false, error: this.error }
       } finally {
-        this.isLoading = false
+        this.isUploadingImage = false
       }
     },
 

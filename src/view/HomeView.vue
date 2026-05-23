@@ -16,6 +16,11 @@
 
     <HomeTrustBadges />
 
+    <HomeDiscountDeals 
+      :products="homeStore.discountProducts" 
+      :is-loading="homeStore.isLoading" 
+    />
+
     <HomeRecommended :products="homeStore.recommendedProducts" :is-loading="homeStore.isLoading" />
 
     <HomeTopBrands :brands="homeStore.brands" :is-loading="homeStore.isLoading" />
@@ -46,6 +51,7 @@ import HomePromoBanner from '@/components/home/HomePromoBanner.vue'
 import HomeRecommended from '@/components/home/HomeRecommended.vue'
 import HomeTopBrands from '@/components/home/HomeTopBrands.vue'
 import HomeTrustBadges from '@/components/home/HomeTrustBadges.vue'
+import HomeDiscountDeals from '@/components/home/HomeDiscountDeals.vue'
 
 // ទាញយក Store មកប្រើ
 import { useHomeStore } from '@/stores/homeStore'

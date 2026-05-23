@@ -130,6 +130,60 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
+    async forgotPassword(email) {
+      this.isLoading = true
+      this.error = null
+
+      try {
+        const response = await authService.forgotPassword(email)
+
+        if (response.data.success) {
+          return { success: true, message: response.data.message }
+        }
+        return { success: false, error: 'Request failed.' }
+      } catch (err) {
+        // ចាប់ Error: ជាពិសេសករណី Social Login (Google)
+        if (err.response && err.response.data && err.response.data.message) {
+          this.error = err.response.data.message
+
+          // បើជាប់ Google Login យើងអាចបោះ Flag ទៅឱ្យ UI ដឹង ដើម្បីលោតសារពិសេស
+          if (err.response.data.data && err.response.data.data.is_social_login) {
+            return { success: false, error: this.error, isSocialLogin: true }
+          }
+        } else {
+          this.error = 'Connection error. Please try again later.'
+        }
+        return { success: false, error: this.error }
+      } finally {
+        this.isLoading = false
+      }
+    },
+
+    // 🌟 ២. មុខងារបញ្ជាក់ OTP និងកំណត់លេខសម្ងាត់ថ្មី
+    async resetPassword(resetData) {
+      this.isLoading = true
+      this.error = null
+
+      try {
+        const response = await authService.resetPassword(resetData)
+
+        if (response.data.success) {
+          return { success: true, message: response.data.message }
+        }
+        return { success: false, error: 'Password reset failed.' }
+      } catch (err) {
+        // ចាប់ Error: OTP ខុស, ផុតកំណត់ ឬ Password មិន Match
+        if (err.response && err.response.data && err.response.data.message) {
+          this.error = err.response.data.message
+        } else {
+          this.error = 'Connection error. Please try again later.'
+        }
+        return { success: false, error: this.error }
+      } finally {
+        this.isLoading = false
+      }
+    },
+
     // 🌟 មុខងារថ្មីសម្រាប់ Update តែទិន្នន័យ User (មិនប៉ះពាល់ Token)
     updateUser(user) {
       this.user = user

@@ -7,6 +7,7 @@ export const useHomeStore = defineStore('home', {
     newArrivals: [],
     brands: [],
     popularCategories: [],
+    discountProducts: [],
     sidebarCategories: [],
     slideshows: [],
     isLoading: false,
@@ -33,6 +34,7 @@ export const useHomeStore = defineStore('home', {
 
         this.recommendedProducts = payload.recommended
         this.newArrivals = payload.new_arrivals
+        this.discountProducts = payload.discount_products || []
         this.brands = payload.top_brands
         this.popularCategories = payload.popular_categories
         this.sidebarCategories = payload.sidebar_categories

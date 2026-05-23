@@ -18,6 +18,7 @@ import CheckoutSuccessView from '@/view/checkout/CheckoutSuccessView.vue'
 import MyOrdersView from '@/view/profile/MyOrdersView.vue'
 import ContactView from '@/view/ContactView.vue'
 import ServicesView from '@/view/ServicesView.vue'
+import ForgotPasswordView from '@/view/auth/ForgotPasswordView.vue'
 
 // 🌟 ១. ជួសជុល Warning ទី ២៖ ប្រើមុខងារ h() ជំនួសឲ្យ template
 const DummyView = (name) => ({
@@ -110,6 +111,12 @@ const router = createRouter({
       path: '/verify-otp',
       name: 'VerifyOtp',
       component: VerifyOtpView,
+      meta: { requiresGuest: true },
+    },
+    {
+      path: '/forgot-password',
+      name: 'ForgotPassword',
+      component: ForgotPasswordView,
       meta: { requiresGuest: true },
     },
   ],

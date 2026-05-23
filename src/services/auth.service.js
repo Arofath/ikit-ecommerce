@@ -21,9 +21,17 @@ export const authService = {
     return api.post('/verify-otp', { email: email, otp_code: otp })
   },
 
-  // 🌟 បន្ថែមថ្មី: សម្រាប់សុំកូដ OTP ថ្មី
   resendOtp(email) {
     return api.post('/resend-otp', { email })
+  },
+
+  forgotPassword(email) {
+    return api.post('/forgot-password', { email })
+  },
+
+  resetPassword(data) {
+    // data ត្រូវមាន: email, otp_code, password, password_confirmation
+    return api.post('/reset-password', data)
   },
 }
 
