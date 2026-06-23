@@ -92,7 +92,7 @@
                 ></path>
               </svg>
               <span class="text-slate-600"
-                >#123, St. 456, Sangkat Toul Tompoung, Khan Chamkarmon, Phnom Penh</span
+                >No. 287CEo, វិថី ឧកញ៉ាទេពផន (182), Phnom Penh</span
               >
             </li>
             <li class="flex items-start gap-3">
@@ -109,7 +109,7 @@
                   d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                 ></path>
               </svg>
-              <span class="text-slate-600">Mon - Sun: 8:00 AM - 8:00 PM</span>
+              <span class="text-slate-600">Mon - Sun: 8:00 AM - 6:00 PM</span>
             </li>
             <li class="flex items-center gap-3">
               <svg
@@ -125,7 +125,7 @@
                   d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
                 ></path>
               </svg>
-              <span class="text-slate-600 font-medium">+855 95 222 334</span>
+              <span class="text-slate-600 font-medium">+855 17275274</span>
             </li>
           </ul>
 

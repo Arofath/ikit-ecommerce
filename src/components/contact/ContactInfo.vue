@@ -9,7 +9,7 @@
         </div>
         <div>
           <h4 class="font-bold text-slate-800 text-sm mb-1">Our Location</h4>
-          <p class="text-slate-500 text-sm leading-relaxed">No. 123, Street 456, Sangkat Toul Tompoung, Khan Chamkarmon, Phnom Penh</p>
+          <p class="text-slate-500 text-sm leading-relaxed">No. 287CEo, វិថី ឧកញ៉ាទេពផន (182), Phnom Penh</p>
         </div>
       </div>
 
@@ -19,8 +19,8 @@
         </div>
         <div>
           <h4 class="font-bold text-slate-800 text-sm mb-1">Phone Number</h4>
-          <p class="text-slate-500 text-sm">+855 12 345 678</p>
-          <p class="text-slate-500 text-sm">+855 98 765 432</p>
+          <p class="text-slate-500 text-sm">+855 17 275 274</p>
+          <!-- <p class="text-slate-500 text-sm">+855 98 765 432</p> -->
         </div>
       </div>
 
