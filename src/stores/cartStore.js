@@ -146,7 +146,7 @@ export const useCartStore = defineStore('cart', {
       if (err.response && err.response.data && err.response.data.message) {
         this.error = err.response.data.message
       } else {
-        this.error = 'មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server។'
+        this.error = 'Failed to load cart. Please try again later.'
       }
     },
   },

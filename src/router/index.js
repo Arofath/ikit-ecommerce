@@ -1,12 +1,12 @@
 import { createRouter, createWebHistory, RouterView } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { h } from 'vue' // 🌟 បន្ថែមការ Import 'h' ពី vue
-import LoginView from '@/view/LoginView.vue'
+// import LoginView from '@/view/LoginView.vue'
 import MainLayout from '@/layouts/MainLayout.vue'
 import HomeView from '@/view/HomeView.vue'
 import ProductDetailView from '@/view/ProductDetailView.vue'
 import ProductListView from '@/view/ProductListView.vue'
-import ProductListTest from '@/view/ProductListTest.vue'
+// import ProductListTest from '@/view/ProductListTest.vue'
 import AuthView from '@/view/auth/AuthView.vue'
 import GoogleCallbackView from '@/view/auth/GoogleCallbackView.vue'
 import VerifyOtpView from '@/view/auth/VerifyOtpView.vue'
@@ -20,15 +20,6 @@ import ContactView from '@/view/ContactView.vue'
 import ServicesView from '@/view/ServicesView.vue'
 import ForgotPasswordView from '@/view/auth/ForgotPasswordView.vue'
 
-// 🌟 ១. ជួសជុល Warning ទី ២៖ ប្រើមុខងារ h() ជំនួសឲ្យ template
-const DummyView = (name) => ({
-  render: () =>
-    h(
-      'div',
-      { style: 'padding: 50px; text-align: center; font-size: 24px;' },
-      `ទំព័រ ${name} (កំពុងសាងសង់)`,
-    ),
-})
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
