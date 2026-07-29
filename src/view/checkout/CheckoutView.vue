@@ -127,7 +127,6 @@ const processCheckout = async () => {
       city: addrData.city,
       shipping_address: addrData.shipping_address,
       
-      // លុបពាក្យ 'CASH_ON_DELIVERY' ចេញ ហើយជំនួសដោយអថេរ paymentMethod.value ដែលចាប់ពី Radio Button វិញ
       payment_method: paymentMethod.value, 
     }
 
