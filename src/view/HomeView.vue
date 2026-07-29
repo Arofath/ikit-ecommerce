@@ -34,7 +34,7 @@
 
     <HomePromoBanner />
 
-    <HomeBestSellers />
+    <!-- <HomeBestSellers /> -->
   </div>
 </template>
 
@@ -42,7 +42,7 @@
 import { onMounted } from 'vue'
 
 // ទាញយកគ្រឿងបន្លាស់មកប្រើ
-import HomeBestSellers from '@/components/home/HomeBestSellers.vue'
+// import HomeBestSellers from '@/components/home/HomeBestSellers.vue'
 import HomeCategoryList from '@/components/home/HomeCategoryList.vue'
 import HomeHeroSlider from '@/components/home/HomeHeroSlider.vue'
 import HomeNewArrivals from '@/components/home/HomeNewArrivals.vue'
