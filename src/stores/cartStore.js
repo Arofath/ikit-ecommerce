@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { cartService } from '@/services/cart.service'
+import { useAuthStore } from '@/stores/authStore'
 
 export const useCartStore = defineStore('cart', {
   // 🌟 ១. State (កន្លែងផ្ទុកទិន្នន័យ)
@@ -13,7 +14,6 @@ export const useCartStore = defineStore('cart', {
     error: null,
   }),
 
-  // 🌟 ២. Getters (សម្រាប់ទាញទិន្នន័យយកទៅប្រើលឿនៗ)
   // 🌟 ២. Getters (សម្រាប់ទាញទិន្នន័យយកទៅប្រើលឿនៗ)
   getters: {
     cartItems: (state) => state.cart?.items || [],
@@ -37,14 +37,33 @@ export const useCartStore = defineStore('cart', {
 
   // 🌟 ៣. Actions (មុខងារបញ្ជាទៅកាន់ Service)
   actions: {
+    loadGuestCart() {
+      const storedCart = localStorage.getItem('guest_cart')
+      if (storedCart) {
+        this.cart.items = JSON.parse(storedCart)
+      } else {
+        this.cart.items = []
+      }
+    },
+    saveGuestCart() {
+      localStorage.setItem('guest_cart', JSON.stringify(this.cart.items))
+    },
     // មុខងារទាញយកកន្ត្រក (ហៅប្រើពេលអតិថិជន Login ចូលភ្លាម ឬបើកវេបសាយ)
     async fetchCart() {
+      const authStore = useAuthStore()
+
+      // បើជា Guest ឱ្យទាញទិន្នន័យពី LocalStorage មកបង្ហាញ
+      if (!authStore.isAuthenticated) {
+        this.loadGuestCart()
+        return
+      }
+
       this.isLoading = true
       this.error = null
       try {
         const response = await cartService.getCart()
         if (response.data.success) {
-          this.cart = response.data.data // ផ្ទុកទិន្នន័យពី CartResource
+          this.cart = response.data.data
         }
       } catch (err) {
         this.handleError(err)
@@ -54,13 +73,35 @@ export const useCartStore = defineStore('cart', {
     },
 
     // មុខងារបន្ថែមទំនិញ
-    async addItem(productId, quantity = 1) {
+    async addItem(product, quantity = 1) {
+      const authStore = useAuthStore()
+
+      // ករណី Guest (មិនទាន់ Login)
+      if (!authStore.isAuthenticated) {
+        this.loadGuestCart()
+        const existingItem = this.cart.items.find((i) => i.product_id === product.id)
+
+        if (existingItem) {
+          existingItem.quantity += quantity
+        } else {
+          this.cart.items.push({
+            id: 'local_' + Date.now(), // បង្កើត ID បណ្ដោះអាសន្ន
+            product_id: product.id,
+            quantity: quantity,
+            product: product, // Save Product ទាំងមូលដើម្បីងាយបង្ហាញលើ UI
+          })
+        }
+        this.saveGuestCart()
+        return { success: true }
+      }
+
+      // ករណី Login រួច
       this.isLoading = true
       this.error = null
       try {
-        const response = await cartService.addItem(productId, quantity)
+        const response = await cartService.addItem(product.id, quantity)
         if (response.data.success) {
-          this.cart = response.data.data // Update ទិន្នន័យថ្មីភ្លាមៗ
+          this.cart = response.data.data
           return { success: true }
         }
       } catch (err) {
@@ -73,32 +114,35 @@ export const useCartStore = defineStore('cart', {
 
     // មុខងារកែប្រែចំនួនទំនិញ
     async updateQuantity(itemId, quantity) {
-      // ១. ស្វែងរកទំនិញនៅក្នុង State បច្ចុប្បន្ន
+      const authStore = useAuthStore()
+
+      // 🌟 បន្ថែមថ្មី៖ ករណី Guest កំពុងកែចំនួន (Update Quantity)
+      if (!authStore.isAuthenticated) {
+        this.loadGuestCart()
+        const itemIndex = this.cart.items.findIndex((i) => i.id === itemId)
+        if (itemIndex !== -1) {
+          this.cart.items[itemIndex].quantity = quantity
+          this.saveGuestCart()
+        }
+        return { success: true }
+      }
+
+      // កូដខាងក្រោមជា Logic ចាស់សម្រាប់អ្នក Login រួច
       const itemIndex = this.cart.items.findIndex((i) => i.id === itemId)
       if (itemIndex === -1) return { success: false, error: 'Item not found' }
 
-      // ២. រក្សាទុកលេខចាស់សិន ក្រែងលោមាន Error ពេលបាញ់ API
       const oldQuantity = this.cart.items[itemIndex].quantity
-
-      // ៣. កែប្រែលទិន្នន័យក្នុង Store ភ្លាមៗ (ធ្វើឱ្យ UI លោតភ្លាមៗមិនចាំបាច់រង់ចាំ API)
       this.cart.items[itemIndex].quantity = quantity
-
       this.error = null
 
       try {
-        // ៤. បាញ់ API ទៅ Backend ដោយស្ងាត់ៗ
         const response = await cartService.updateItem(itemId, quantity)
-
         if (response.data.success) {
-          // ៥. ពេល Backend ឆ្លើយថា OK, យើង Update ទិន្នន័យកន្ត្រកទាំងមូលជាការស្រេច
           this.cart = response.data.data
           return { success: true }
         }
       } catch (err) {
-        // ៦. ករណី Backend ឆ្លើយថា Error (ឧទាហរណ៍៖ ទិញលើសស្តុក)
-        // យើងត្រូវទាញលេខកន្ត្រក ត្រឡប់ទៅលេខចាស់វិញភ្លាមៗ
         this.cart.items[itemIndex].quantity = oldQuantity
-
         this.handleError(err)
         return { success: false, error: this.error }
       }
@@ -106,6 +150,17 @@ export const useCartStore = defineStore('cart', {
 
     // មុខងារលុបទំនិញ ១ ចេញ
     async removeItem(itemId) {
+      const authStore = useAuthStore()
+
+      // 🌟 បន្ថែមថ្មី៖ ករណី Guest ចុចលុបទំនិញពីកន្ត្រក (Remove Item)
+      if (!authStore.isAuthenticated) {
+        this.loadGuestCart()
+        this.cart.items = this.cart.items.filter((i) => i.id !== itemId)
+        this.saveGuestCart()
+        return { success: true }
+      }
+
+      // កូដខាងក្រោមជា Logic ចាស់សម្រាប់អ្នក Login រួច
       this.isLoading = true
       this.error = null
       try {
@@ -121,7 +176,6 @@ export const useCartStore = defineStore('cart', {
         this.isLoading = false
       }
     },
-
     // មុខងារសម្អាតកន្ត្រក (ឧ. ប្រើពេល Checkout រួច)
     async clearCart() {
       this.isLoading = true

@@ -15,10 +15,10 @@
           >Products</router-link
         >
         <router-link
-          to="/services"
+          to="/warranty"
           exact-active-class="!border-white !opacity-100 font-bold"
           class="hover:text-white transition-colors border-b-2 border-transparent hover:border-white py-4 opacity-90 hover:opacity-100"
-          >Services</router-link
+          >Warranty</router-link
         >
         <router-link
           to="/contact"
@@ -186,7 +186,7 @@
     >
       <router-link @click="closeMobileMenu" to="/" exact-active-class="bg-slate-50 text-ikit-blue font-bold border-l-4 !border-ikit-blue" class="px-6 py-4 border-b border-slate-100 border-l-4 hover:bg-slate-50 hover:text-ikit-blue transition-colors">Home</router-link>
       <router-link @click="closeMobileMenu" to="/products" exact-active-class="bg-slate-50 text-ikit-blue font-bold border-l-4 !border-ikit-blue" class="px-6 py-4 border-b border-slate-100 border-l-4 hover:bg-slate-50 hover:text-ikit-blue transition-colors">Products</router-link>
-      <router-link @click="closeMobileMenu" to="/services" exact-active-class="bg-slate-50 text-ikit-blue font-bold border-l-4 !border-ikit-blue" class="px-6 py-4 border-b border-slate-100 border-l-4 hover:bg-slate-50 hover:text-ikit-blue transition-colors">Services</router-link>
+      <router-link @click="closeMobileMenu" to="/warranty" exact-active-class="bg-slate-50 text-ikit-blue font-bold border-l-4 !border-ikit-blue" class="px-6 py-4 border-b border-slate-100 border-l-4 hover:bg-slate-50 hover:text-ikit-blue transition-colors">Warranty</router-link>
       <router-link @click="closeMobileMenu" to="/contact" exact-active-class="bg-slate-50 text-ikit-blue font-bold border-l-4 !border-ikit-blue" class="px-6 py-4 border-l-4 border-transparent hover:bg-slate-50 hover:text-ikit-blue transition-colors">Contact Us</router-link>
     </div>
   </div>
@@ -302,8 +302,10 @@ const handleLogout = () => {
 let pollingTimer = null
 
 onMounted(() => {
+  // 🌟 ទាញយកកន្ត្រកទំនិញជានិច្ច (ទោះ Login ឬមិនទាន់ក៏ដោយ)
+  cartStore.fetchCart()
+
   if (authStore.isAuthenticated) {
-    cartStore.fetchCart()
     favoriteStore.fetchFavorites()
     notificationStore.fetchNotifications()
 
@@ -323,11 +325,14 @@ watch(
     }
 
     if (isAuth) {
+      // ពេល Login ចូល ហៅ fetch ម្តងទៀត ដើម្បីទាញយកពី Database មកបញ្ចូលគ្នា
       cartStore.fetchCart()
       favoriteStore.fetchFavorites()
       notificationStore.fetchNotifications()
     } else {
-      cartStore.cart = { total_items: 0, total_cart_price: 0, items: [] }
+      // ពេល Logout យើងគ្រាន់តែទាញយក Local Cart មកដាក់វិញ
+      cartStore.fetchCart() 
+      
       favoriteStore.favorites = []
       notificationStore.notifications = [] 
       notificationStore.unreadCount = 0

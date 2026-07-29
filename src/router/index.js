@@ -19,6 +19,7 @@ import MyOrdersView from '@/view/profile/MyOrdersView.vue'
 import ContactView from '@/view/ContactView.vue'
 import ServicesView from '@/view/ServicesView.vue'
 import ForgotPasswordView from '@/view/auth/ForgotPasswordView.vue'
+import WarrantyCheckView from '@/view/WarrantyCheckView.vue'
 
 
 const router = createRouter({
@@ -33,6 +34,7 @@ const router = createRouter({
       children: [
         // Public Routes
         { path: '', name: 'Home', component: HomeView },
+        { path: 'warranty', name: 'Warranty', component: WarrantyCheckView },
         {
           path: 'product/:slug',
           name: 'ProductDetail',

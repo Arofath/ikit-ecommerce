@@ -3,8 +3,9 @@
     class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 sm:p-6 flex flex-col sm:flex-row items-center gap-6 relative transition-all hover:shadow-md"
   >
     <div class="w-full sm:w-32 h-32 bg-slate-100 rounded-xl shrink-0 overflow-hidden">
+      <!-- 🌟 កែប្រែទី ១៖ បន្ថែមការឆែករក image_path ព្រោះ thumbnail ជា Object -->
       <img
-        :src="item.product?.thumbnail || 'https://placehold.co/400x400/f8fafc/94a3b8?text=No+Image'"
+        :src="item.product?.thumbnail?.image_path || item.product?.thumbnail || 'https://placehold.co/400x400/f8fafc/94a3b8?text=No+Image'"
         :alt="item.product?.name"
         class="w-full h-full object-cover"
       />
@@ -20,14 +21,15 @@
         </div>
 
         <div class="text-right">
+          <!-- 🌟 កែប្រែទី ២៖ ប្រើប្រាស់ Number() ដើម្បីរុំតម្លៃ ការពារ Error ពេលវាជា String ឬ Undefined -->
           <span class="text-lg font-bold text-blue-600">
-            ${{ (item.product?.final_price || item.product?.price).toFixed(2) }}
+            ${{ Number(item.product?.final_price || item.product?.price || 0).toFixed(2) }}
           </span>
           <p
             v-if="item.product?.discount_percent > 0"
             class="text-xs text-slate-400 line-through mt-0.5"
           >
-            ${{ item.product?.price.toFixed(2) }}
+            ${{ Number(item.product?.price || 0).toFixed(2) }}
           </p>
         </div>
       </div>

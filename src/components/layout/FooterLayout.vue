@@ -165,18 +165,18 @@
 
         <div class="flex gap-4">
           <img
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/200px-Mastercard-logo.svg.png"
+            src="https://upload.wikimedia.org/wikipedia/commons/b/b7/MasterCard_Logo.svg"
             alt="Mastercard"
             class="h-6 grayscale hover:grayscale-0 transition opacity-70 hover:opacity-100"
           />
           <img
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/200px-Visa_Inc._logo.svg.png"
+            src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Visa_Inc._logo_%282021%E2%80%93present%29.svg"
             alt="Visa"
             class="h-6 grayscale hover:grayscale-0 transition opacity-70 hover:opacity-100"
           />
           <img
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/ABA_Bank_Logo.png/200px-ABA_Bank_Logo.png"
-            alt="ABA"
+            src="https://upload.wikimedia.org/wikipedia/commons/b/bb/KHQR_Logo.png"
+            alt="KHQR"
             class="h-6 grayscale hover:grayscale-0 transition opacity-70 hover:opacity-100"
           />
         </div>

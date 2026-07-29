@@ -45,8 +45,6 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/authStore'
 import { useCartStore } from '@/stores/cartStore'
 import Swal from 'sweetalert2'
 
@@ -56,34 +54,16 @@ const props = defineProps({
   badgeColor: { type: String, default: 'bg-ikit-blue' }
 })
 
-const router = useRouter()
-const authStore = useAuthStore()
 const cartStore = useCartStore()
 
 const isAdding = ref(false) // 🌟 State Loading ដាច់ដោយឡែកសម្រាប់ Card នីមួយៗ
 
 // 🌟 មុខងារ Add to Cart
 const addToCart = async () => {
-  if (!authStore.isAuthenticated) {
-    Swal.fire({
-      title: 'Please Login',
-      text: 'You need to have an account to purchase items!',
-      icon: 'info',
-      showCancelButton: true,
-      confirmButtonColor: '#2563eb',
-      cancelButtonColor: '#94a3b8',
-      confirmButtonText: 'Go to Login Page',
-      cancelButtonText: 'Close',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        router.push('/login')
-      }
-    })
-    return
-  }
-
   isAdding.value = true
-  const result = await cartStore.addItem(props.product.id, 1)
+  
+  // 🌟 បញ្ជូន Object Product ទាំងមូលទៅ Store ជំនួសឱ្យ ID
+  const result = await cartStore.addItem(props.product, 1) 
   isAdding.value = false
 
   if (result.success) {
