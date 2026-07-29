@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import OrderService from '@/services/order.service'
-import { useCartStore } from './cartStore' // 🌟 ត្រូវការទាញ Store កន្ត្រកមកប្រើ ដើម្បីលុបវាចោលពេលទិញរួច
+import { useCartStore } from './cartStore'
+import api from '@/services/api'
+
 
 export const useOrderStore = defineStore('order', {
   state: () => ({
@@ -63,11 +65,39 @@ export const useOrderStore = defineStore('order', {
         const response = await OrderService.checkout(checkoutData)
 
         const cartStore = useCartStore()
-        cartStore.clearCart() // សម្អាតកន្ត្រក
+        cartStore.clearCart()
 
         return response.data
       } catch (error) {
         this.error = error.response?.data?.message || 'Checkout failed. Please try again.'
+        throw error
+      } finally {
+        this.isProcessing = false
+      }
+    },
+
+    async uploadReceipt(orderId, file) {
+      this.isProcessing = true
+      this.error = null
+      try {
+        const formData = new FormData()
+        formData.append('receipt', file)
+
+        // បាញ់ API ដោយប្រើ multipart/form-data
+        const response = await api.post(`/orders/${orderId}/upload-receipt`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+
+        // Update វិក្កយបត្របច្ចុប្បន្នឱ្យឃើញរូបភាពភ្លាមៗ
+        if (this.currentOrder) {
+          this.currentOrder.payment_receipt = response.data.receipt_url
+        }
+
+        return response.data
+      } catch (error) {
+        this.error = error.response?.data?.message || 'Failed to upload receipt.'
         throw error
       } finally {
         this.isProcessing = false

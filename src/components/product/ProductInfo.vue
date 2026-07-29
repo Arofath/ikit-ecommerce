@@ -313,24 +313,14 @@ const smartShortSpecs = computed(() => {
 })
 
 const addToCart = async () => {
-  if (!authStore.isAuthenticated) {
-    Swal.fire({
-      title: 'Please Login',
-      text: 'You need to have an account to purchase items!',
-      icon: 'info',
-      showCancelButton: true,
-      confirmButtonColor: '#2563eb',
-      cancelButtonColor: '#94a3b8',
-      confirmButtonText: 'Go to Login Page',
-      cancelButtonText: 'Close',
-    }).then((result) => {
-      if (result.isConfirmed) router.push('/login')
-    })
-    return
-  }
+  // 🌟 លុបប្លុក if (!authStore.isAuthenticated) ចោលទាំងស្រុង
 
   isAdding.value = true
-  const result = await cartStore.addItem(props.product.id, quantity.value)
+  
+  // បញ្ជូន Object product ទាំងមូលទៅឱ្យ Store 
+  // (Store វានឹងឆែកខ្លួនឯងថា គួរ Save ចូល LocalStorage ឬ បាញ់ API)
+  const result = await cartStore.addItem(props.product, quantity.value) 
+  
   isAdding.value = false
 
   if (result.success) {
@@ -342,7 +332,6 @@ const addToCart = async () => {
       showConfirmButton: false,
       timer: 1500,
     })
-    // Reset ចំនួនមកលេខ ១ វិញបន្ទាប់ពី Add ជោគជ័យ
     quantity.value = 1
   } else {
     Swal.fire('Failed', result.error || 'Could not add to cart.', 'error')
@@ -428,7 +417,7 @@ const buyNow = async () => {
     isAdding.value = true; // បើក Loading វិលៗ
 
     // ៣. បន្ថែមទំនិញចូលកន្ត្រក (ប្រើ Function addItem របស់ CartStore ដូចខាង Add to cart ដែរ)
-    const result = await cartStore.addItem(props.product.id, quantity.value);
+    const result = await cartStore.addItem(props.product, quantity.value);
     
     isAdding.value = false; // បិទ Loading
 

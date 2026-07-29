@@ -22,7 +22,88 @@
       </div>
     </div>
 
-     <!-- Invoice -->
+    <!-- កន្លែង Upload Receipt -->
+    <div 
+      v-if="orderStore.currentOrder && orderStore.currentOrder.payment_method === 'BANK_TRANSFER'" 
+      class="mb-8 p-6 sm:p-8 bg-blue-50 border border-blue-100 rounded-xl print:hidden flex flex-col md:flex-row gap-8 items-start"
+    >
+      <!-- បង្ហាញ KHQR សម្រាប់ស្កេន -->
+      <div class="w-full md:w-1/3 flex flex-col items-center text-center">
+        <h3 class="font-bold text-slate-800 mb-2">1. Scan to Pay</h3>
+        <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 mb-3 inline-block">
+          <img src="/src/assets/images/qrcode.jpg" alt="KHQR" class="w-40 h-40 object-cover" />
+        </div>
+        <p class="text-sm font-bold text-blue-600">Total: ${{ parseFloat(orderStore.currentOrder.grand_total).toFixed(2) }}</p>
+      </div>
+
+      <!-- កន្លែង Upload ឯកសារ -->
+      <div class="w-full md:w-2/3">
+        <h3 class="font-bold text-slate-800 mb-2">2. Upload Payment Receipt</h3>
+        <p class="text-sm text-slate-600 mb-4">Please upload a screenshot of your successful transaction to complete your order.</p>
+
+        <!-- 🌟 បង្ហាញសារព្រមានពណ៌ក្រហម ប្រសិនបើ Admin បាន Reject វិក្កយបត្រនេះ 🌟 -->
+        <div v-if="orderStore.currentOrder.payment_status === 'INVALID_RECEIPT'" class="mb-5 p-4 bg-red-50 border border-red-200 rounded-xl shadow-sm">
+          <h4 class="text-red-700 font-bold flex items-center gap-2 mb-1.5">
+            <i class="fas fa-exclamation-triangle"></i> Payment Rejected
+          </h4>
+          <p class="text-sm text-red-600 leading-relaxed">
+            <span class="font-semibold">Reason:</span> {{ orderStore.currentOrder.payment_note || 'Your receipt was rejected. Please check and upload a valid one.' }}
+          </p>
+        </div>
+
+        <!-- 🌟 បង្ហាញរូបភាពដែល Upload រួច (លុះត្រាតែមានរូបភាព ហើយមិនមែនស្ថិតក្នុងស្ថានភាព INVALID_RECEIPT) 🌟 -->
+        <div v-if="orderStore.currentOrder.payment_receipt && orderStore.currentOrder.payment_status !== 'INVALID_RECEIPT'" class="bg-white p-4 rounded-lg border border-emerald-200 flex items-start gap-4">
+          <a :href="orderStore.currentOrder.payment_receipt" target="_blank" class="shrink-0">
+            <img :src="orderStore.currentOrder.payment_receipt" class="w-20 h-20 object-cover rounded shadow-sm border hover:opacity-80 transition" />
+          </a>
+          <div>
+            <p class="text-emerald-600 font-bold flex items-center gap-1"><i class="fas fa-check-circle"></i> Receipt Uploaded</p>
+            <p class="text-sm text-slate-500 mt-1">We are verifying your payment. Your order will be processed shortly.</p>
+          </div>
+        </div>
+
+        <!-- 🌟 ផ្ទាំង Upload ថ្មី (បង្ហាញពេលមិនទាន់មានរូបភាព ឬពេល Admin Reject) 🌟 -->
+        <div v-else>
+          <!-- កន្លែងបង្ហាញ Preview រូបភាព -->
+          <div v-if="previewUrl" class="mb-4 relative inline-block">
+            <div class="bg-white p-2 rounded-lg border border-slate-200 shadow-sm">
+              <img :src="previewUrl" alt="Receipt Preview" class="max-h-48 rounded object-contain" />
+            </div>
+            <!-- ប៊ូតុងខ្វែង (X) សម្រាប់លុបរូបចោលបើជ្រើសរើសខុស -->
+            <button 
+              @click="clearSelection" 
+              class="absolute -top-3 -right-3 bg-red-500 text-white rounded-full w-7 h-7 flex items-center justify-center hover:bg-red-600 shadow-md cursor-pointer transition-transform hover:scale-110"
+              title="Remove image"
+            >
+              <i class="fas fa-times text-sm"></i>
+            </button>
+          </div>
+
+          <!-- Input File និង ប៊ូតុង Upload -->
+          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+            <input 
+              type="file" 
+              ref="fileInputRef"
+              @change="handleFileSelect" 
+              accept="image/png, image/jpeg, image/jpg"
+              class="block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 transition cursor-pointer bg-white border border-slate-200 rounded-lg"
+              :disabled="orderStore.isProcessing"
+            />
+            <button 
+              @click="submitReceipt" 
+              :disabled="!selectedFile || orderStore.isProcessing"
+              class="px-8 py-2.5 bg-emerald-600 text-white rounded-lg font-bold hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shrink-0 flex items-center justify-center gap-2 w-full sm:w-auto"
+            >
+              <i v-if="orderStore.isProcessing" class="fas fa-spinner fa-spin"></i>
+              <span v-else>Upload</span>
+            </button>
+          </div>
+          <p class="text-xs text-slate-400 mt-2">Accepted formats: JPG, PNG. Max size: 5MB.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Invoice Content រក្សាដូចដើម -->
     <div
       v-if="orderStore.currentOrder"
       class="bg-white p-10 sm:p-14 rounded-none sm:rounded-xl shadow-md border border-slate-200"
@@ -32,10 +113,8 @@
         <div>
           <h1 class="text-5xl font-black text-slate-800 uppercase tracking-wider mb-2">INVOICE</h1>
         </div>
-
         <div class="w-24 h-24 rounded-full flex items-center justify-center shrink-0">
           <img src="@/assets/images/ikit-logo.png" alt="" />
-          <!-- <span class="text-blue-600 font-bold text-xl">iKit</span> -->
         </div>
       </div>
 
@@ -130,25 +209,14 @@
             <p class="text-slate-600">
               Status:
               <strong
-                :class="
-                  orderStore.currentOrder.payment_status === 'PAID'
-                    ? 'text-emerald-600'
-                    : 'text-amber-600'
-                "
+                :class="{
+                  'text-emerald-600': orderStore.currentOrder.payment_status === 'PAID',
+                  'text-amber-600': orderStore.currentOrder.payment_status === 'UNPAID',
+                  'text-red-600': orderStore.currentOrder.payment_status === 'INVALID_RECEIPT'
+                }"
                 >{{ orderStore.currentOrder.payment_status }}</strong
               >
             </p>
-
-            <div
-              v-if="orderStore.currentOrder.payment_method !== 'CASH_ON_DELIVERY'"
-              class="mt-4 border border-slate-200 p-2 rounded-xl w-32 inline-block"
-            >
-              <img
-                src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=iKitComputerPayment"
-                alt="QR"
-                class="w-full rounded-lg"
-              />
-            </div>
           </div>
         </div>
 
@@ -187,11 +255,6 @@
               <span>TOTAL</span>
               <span>${{ parseFloat(orderStore.currentOrder.grand_total).toFixed(2) }}</span>
             </div>
-
-            <!-- <div class="flex justify-between font-bold text-blue-600">
-              <span>TOTAL (KHR)</span>
-              <span>៛{{ (parseFloat(orderStore.currentOrder.grand_total) * 4100).toLocaleString() }}</span>
-            </div> -->
           </div>
         </div>
       </div>
@@ -209,12 +272,17 @@
 </template>
 
 <script setup>
-import { onMounted, computed } from 'vue'
+import { onMounted, computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useOrderStore } from '@/stores/orderStore'
+import Swal from 'sweetalert2'
 
 const route = useRoute()
 const orderStore = useOrderStore()
+
+const fileInputRef = ref(null) 
+const selectedFile = ref(null)
+const previewUrl = ref(null)   
 
 onMounted(async () => {
   const orderId = route.query.order_id
@@ -236,7 +304,6 @@ const formatDate = (dateString) => {
 const originalSubtotal = computed(() => {
   if (!orderStore.currentOrder?.items) return 0
   return orderStore.currentOrder.items.reduce((sum, item) => {
-    // យកតម្លៃដើមរបស់ Product មកគុណនឹងចំនួន (បើអត់មានតម្លៃដើម យកតម្លៃដែលលក់)
     const originalPrice = item.product?.price || item.unit_price
     return sum + originalPrice * item.quantity
   }, 0)
@@ -244,9 +311,69 @@ const originalSubtotal = computed(() => {
 
 const totalDiscountAmount = computed(() => {
   if (!orderStore.currentOrder) return 0
-  // យកតម្លៃដើមសរុប ដក តម្លៃដែលអតិថិជនទិញជាក់ស្តែង (Subtotal ក្នុង Order)
   return originalSubtotal.value - orderStore.currentOrder.subtotal
 })
+
+const clearSelection = () => {
+  selectedFile.value = null
+  if (previewUrl.value) {
+    URL.revokeObjectURL(previewUrl.value) 
+    previewUrl.value = null
+  }
+  if (fileInputRef.value) {
+    fileInputRef.value.value = '' 
+  }
+}
+
+const handleFileSelect = (event) => {
+  const file = event.target.files[0]
+  if (!file) {
+    clearSelection()
+    return
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    Swal.fire('File Too Large', 'Please select an image smaller than 5MB.', 'warning')
+    clearSelection()
+    return
+  }
+  
+  selectedFile.value = file
+  
+  if (previewUrl.value) {
+    URL.revokeObjectURL(previewUrl.value) 
+  }
+  previewUrl.value = URL.createObjectURL(file)
+}
+
+const submitReceipt = async () => {
+  if (!selectedFile.value || !orderStore.currentOrder) return
+
+  try {
+    await orderStore.uploadReceipt(orderStore.currentOrder.id, selectedFile.value)
+    
+    // 🌟 បន្ទាប់ពី Upload ថ្មីជោគជ័យ យើងប្តូរ Status ក្នុង Frontend មកជា UNPAID ជាបណ្ដោះអាសន្ន 
+    // ដើម្បីកុំឱ្យវានៅលោតផ្ទាំង Reject ទារឱ្យ Upload សារជាថ្មីទៀត
+    if (orderStore.currentOrder) {
+      orderStore.currentOrder.payment_status = 'UNPAID'
+      orderStore.currentOrder.payment_note = null
+    }
+
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: 'success',
+      title: 'Receipt uploaded successfully!',
+      showConfirmButton: false,
+      timer: 2000
+    })
+    
+    clearSelection() 
+  // eslint-disable-next-line no-unused-vars
+  } catch (error) {
+    Swal.fire('Upload Failed', orderStore.error || 'Could not upload receipt.', 'error')
+  }
+}
 
 const printInvoice = () => {
   window.print()
@@ -255,19 +382,16 @@ const printInvoice = () => {
 
 <style>
 @media print {
-  /* ១. កំណត់ទំហំក្រដាស A4 និងលុប Header/Footer របស់ Browser ចោល (URL, ថ្ងៃខែ) */
   @page {
     size: A4 portrait;
-    margin: 10mm; /* ទុកចន្លោះគែមក្រដាសបន្តិច ដើម្បីកុំអោយបាត់អក្សរ Browser */
+    margin: 10mm; 
   }
 
-  /* ២. បង្ខំអោយ Browser Print ជាប់ពណ៌ Background (ឧ. ពណ៌ផ្ទៃតារាង, ពណ៌ Badge) */
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 
-  /* ៣. លាក់អ្វីៗទាំងអស់នៅលើវេបសាយ លើកលែងតែ Invoice ប៉ុណ្ណោះ */
   body * {
     visibility: hidden;
   }
@@ -277,20 +401,18 @@ const printInvoice = () => {
     visibility: visible;
   }
 
-  /* ៤. រៀបចំ Invoice អោយទាញមកនៅកំពូលគេ និងបំបាត់ស្រមោល (Shadow) */
   #invoice-content {
     position: absolute;
     left: 0;
     top: 0;
     width: 100%;
     margin: 0 !important;
-    padding: 10px !important; /* បន្ថយ Padding ពេល Print ដើម្បីកុំអោយធ្លាក់ទំព័រ */
+    padding: 10px !important; 
     box-shadow: none !important;
     border: none !important;
-    page-break-inside: avoid; /* ការពារកុំអោយដាច់ធ្លាក់ទៅទំព័រទី ២ (ធានាថាចេញតែ ១ សន្លឹក) */
+    page-break-inside: avoid; 
   }
 
-  /* ៥. លាក់ប៊ូតុង Print និង ប៊ូតុង Continue */
   .print\:hidden {
     display: none !important;
   }
