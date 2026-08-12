@@ -22,8 +22,11 @@
       
       <div class="flex justify-between">
         <span>Shipping Fee</span>
-        <span class="font-medium" :class="shippingFee === 0 ? 'text-emerald-500' : 'text-slate-800'">
-          {{ shippingFee === 0 ? 'To be calculated' : '+$' + shippingFee.toFixed(2) }}
+        <!-- 🌟 កែប្រែលក្ខខណ្ឌនៅទីនេះ ដើម្បីបំបែករវាង "មិនទាន់រើសខេត្ត" និង "ហ្វ្រីថ្លៃដឹក" -->
+        <span class="font-medium" :class="!isAddressValid || shippingFee === 0 ? 'text-emerald-500' : 'text-slate-800'">
+          <span v-if="!isAddressValid">To be calculated</span>
+          <span v-else-if="shippingFee === 0">Free Shipping</span>
+          <span v-else>+${{ shippingFee.toFixed(2) }}</span>
         </span>
       </div>
       
@@ -54,11 +57,10 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'; // 🌟 ថែម computed
+import { computed } from 'vue';
 import { useCartStore } from '@/stores/cartStore';
 import { useOrderStore } from '@/stores/orderStore'; 
 
-// 🌟 ទទួលយក shippingFee ពីទំព័រមេ
 const props = defineProps({
   isAddressValid: {
     type: Boolean,
@@ -75,8 +77,7 @@ defineEmits(['submit-order']);
 const cartStore = useCartStore();
 const orderStore = useOrderStore();
 
-// 🌟 គណនាតម្លៃចុងក្រោយ
 const grandTotal = computed(() => {
-  return cartStore.totalPrice + props.shippingFee;
+  return cartStore.totalPrice + (props.shippingFee || 0); // ប្រើធានាសុវត្ថិភាពទិន្នន័យ
 });
 </script>

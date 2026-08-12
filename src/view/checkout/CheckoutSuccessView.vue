@@ -103,7 +103,7 @@
       </div>
     </div>
 
-    <!-- Invoice Content រក្សាដូចដើម -->
+    <!-- Invoice Content -->
     <div
       v-if="orderStore.currentOrder"
       class="bg-white p-10 sm:p-14 rounded-none sm:rounded-xl shadow-md border border-slate-200"
@@ -133,6 +133,10 @@
           </p>
           <p class="text-slate-600 max-w-62.5 sm:ml-auto">
             {{ orderStore.currentOrder.shipping_address }}
+            <!-- 🌟 បន្ថែមទីតាំង Zone ឬ City ចូលក្នុងវិក្កយបត្រ (Backward Compatibility) 🌟 -->
+            <template v-if="orderStore.currentOrder.shipping_zone?.name || orderStore.currentOrder.city">
+              , {{ orderStore.currentOrder.shipping_zone?.name || orderStore.currentOrder.city }}
+            </template>
           </p>
           <p class="text-slate-600">{{ orderStore.currentOrder.shipping_phone }}</p>
         </div>
@@ -240,14 +244,28 @@
               <span>-${{ totalDiscountAmount.toFixed(2) }}</span>
             </div>
 
-            <div class="flex justify-between text-slate-600">
-              <span>SHIPPING</span>
-              <span>{{
-                orderStore.currentOrder.shipping_fee > 0
-                  ? '+$' + parseFloat(orderStore.currentOrder.shipping_fee).toFixed(2)
-                  : 'Free'
-              }}</span>
-            </div>
+            <!-- 🌟 បំបែកថ្លៃដឹកជញ្ជូន (Base & Surcharge) ក្នុងករណីមានអីវ៉ាន់ធំ 🌟 -->
+            <template v-if="orderStore.currentOrder.bulky_surcharge_total > 0">
+              <div class="flex justify-between text-slate-600">
+                <span>SHIPPING (BASE)</span>
+                <span>{{ orderStore.currentOrder.base_shipping_cost > 0 ? '+$' + parseFloat(orderStore.currentOrder.base_shipping_cost).toFixed(2) : 'Free' }}</span>
+              </div>
+              <div class="flex justify-between text-slate-600">
+                <span>BULKY SURCHARGE</span>
+                <span>+${{ parseFloat(orderStore.currentOrder.bulky_surcharge_total).toFixed(2) }}</span>
+              </div>
+            </template>
+            <!-- 🌟 រក្សាទម្រង់ចាស់សម្រាប់វិក្កយបត្រចាស់ៗ ឬគ្មានអីវ៉ាន់ធំ 🌟 -->
+            <template v-else>
+              <div class="flex justify-between text-slate-600">
+                <span>SHIPPING</span>
+                <span>{{
+                  orderStore.currentOrder.shipping_fee > 0
+                    ? '+$' + parseFloat(orderStore.currentOrder.shipping_fee).toFixed(2)
+                    : 'Free'
+                }}</span>
+              </div>
+            </template>
 
             <div
               class="flex justify-between font-bold text-slate-800 pt-3 border-t border-slate-200"

@@ -163,7 +163,7 @@
           &copy; {{ currentYear }} Ikit Computer. All Rights Reserved.
         </p>
 
-        <div class="flex gap-4">
+        <!-- <div class="flex gap-4">
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/b/b7/MasterCard_Logo.svg"
             alt="Mastercard"
@@ -179,7 +179,7 @@
             alt="KHQR"
             class="h-6 grayscale hover:grayscale-0 transition opacity-70 hover:opacity-100"
           />
-        </div>
+        </div> -->
       </div>
     </div>
   </footer>
