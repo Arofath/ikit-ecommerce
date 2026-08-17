@@ -18,4 +18,8 @@ export default {
   checkout(data) {
     return api.post('/orders/checkout', data)
   },
+
+  updateOrderAddress(id, data) {
+    return api.put(`/orders/${id}/address`, data)
+  },
 }

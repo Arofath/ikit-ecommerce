@@ -10,10 +10,14 @@ export default {
     return api.post('/addresses', data)
   },
 
+  updateAddress(id, data) {
+    return api.put(`/addresses/${id}`, data) // ប្រើ PUT ឬ PATCH អាស្រ័យលើ Backend
+  },
+
   setAsDefault(id) {
     return api.patch(`/addresses/${id}/set-default`)
   },
- 
+
   deleteAddress(id) {
     return api.delete(`/addresses/${id}`)
   },

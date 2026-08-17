@@ -3,7 +3,6 @@ import OrderService from '@/services/order.service'
 import { useCartStore } from './cartStore'
 import api from '@/services/api'
 
-
 export const useOrderStore = defineStore('order', {
   state: () => ({
     orders: [], // ទុកបញ្ជីវិក្កយបត្រ (ប្រវត្តិទិញ)
@@ -99,6 +98,30 @@ export const useOrderStore = defineStore('order', {
       } catch (error) {
         this.error = error.response?.data?.message || 'Failed to upload receipt.'
         throw error
+      } finally {
+        this.isProcessing = false
+      }
+    },
+
+    // 🌟 មុខងារថ្មី៖ កែប្រែអាសយដ្ឋានលើវិក្កយបត្រ
+    async updateOrderAddress(orderId, addressData) {
+      this.isProcessing = true
+      this.error = null
+      try {
+        const response = await OrderService.updateOrderAddress(orderId, addressData)
+
+        // ក្រោយពេលជោគជ័យ យើង Update ទិន្នន័យក្នុង state ភ្លាមៗដើម្បីឱ្យ UI ផ្លាស់ប្តូរ
+        if (this.currentOrder && this.currentOrder.id === orderId) {
+          this.currentOrder = { ...this.currentOrder, ...response.data.data }
+        }
+
+        return { success: true, message: response.data.message }
+      } catch (error) {
+        this.error = error.response?.data?.message || 'Could not update order address'
+        return {
+          success: false,
+          error: this.error,
+        }
       } finally {
         this.isProcessing = false
       }

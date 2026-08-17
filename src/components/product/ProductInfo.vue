@@ -117,12 +117,18 @@
           >
             -
           </button>
+
+          <!-- 🌟 កែប្រែ Input ត្រង់នេះ 🌟 -->
           <input
-            type="text"
-            :value="quantity"
-            class="w-full h-full text-center font-bold text-slate-800 outline-none"
-            readonly
+            type="number"
+            v-model.number="quantity"
+            @blur="validateQuantity"
+            @keyup.enter="validateQuantity"
+            class="w-full h-full text-center font-bold text-slate-800 outline-none hide-arrows"
+            min="1"
+            :max="product.current_stock"
           />
+
           <button
             @click="quantity < product.current_stock ? quantity++ : null"
             class="w-10 h-full flex items-center justify-center text-slate-500 hover:text-ikit-blue hover:bg-slate-50 transition-colors cursor-pointer"
@@ -194,7 +200,7 @@
         </button>
       </div>
 
-<button
+      <button
         @click="buyNow"
         :disabled="product.current_stock <= 0 || isAdding"
         :class="
@@ -312,15 +318,38 @@ const smartShortSpecs = computed(() => {
   return result
 })
 
+const validateQuantity = () => {
+    let val = parseInt(quantity.value)
+
+    // បើគាត់វាយអក្សរ ឬលេខតូចជាង ១ ឱ្យវាលោតមកលេខ ១ វិញ
+    if (isNaN(val) || val < 1) {
+      quantity.value = 1
+    }
+    // បើគាត់វាយលេខធំជាងស្តុកដែលមាន ឱ្យវាស្មើនឹងចំនួនស្តុកអតិបរមា
+    else if (val > props.product.current_stock) {
+      quantity.value = props.product.current_stock
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'warning',
+        title: `Only ${props.product.current_stock} items left in stock.`,
+        showConfirmButton: false,
+        timer: 2000,
+      })
+    } else {
+      quantity.value = val
+    }
+  }
+
 const addToCart = async () => {
   // 🌟 លុបប្លុក if (!authStore.isAuthenticated) ចោលទាំងស្រុង
 
   isAdding.value = true
-  
-  // បញ្ជូន Object product ទាំងមូលទៅឱ្យ Store 
+
+  // បញ្ជូន Object product ទាំងមូលទៅឱ្យ Store
   // (Store វានឹងឆែកខ្លួនឯងថា គួរ Save ចូល LocalStorage ឬ បាញ់ API)
-  const result = await cartStore.addItem(props.product, quantity.value) 
-  
+  const result = await cartStore.addItem(props.product, quantity.value)
+
   isAdding.value = false
 
   if (result.success) {
@@ -349,11 +378,11 @@ const handleToggleFavorite = async () => {
       confirmButtonColor: '#2563eb',
       cancelButtonColor: '#94a3b8',
       confirmButtonText: 'Go to Login Page',
-      cancelButtonText: 'Close'
+      cancelButtonText: 'Close',
     }).then((result) => {
-      if (result.isConfirmed) router.push('/login') 
+      if (result.isConfirmed) router.push('/login')
     })
-    return 
+    return
   }
 
   // បាញ់ទៅកាន់ Store (Store នឹងរ៉ាប់រងការ Update UI ភ្លាមៗ និងហៅ API ទៅ Backend ដោយស្ងាត់ៗ)
@@ -367,7 +396,7 @@ const handleToggleFavorite = async () => {
       icon: 'error',
       title: result.error || 'Failed to update wishlist',
       showConfirmButton: false,
-      timer: 2000
+      timer: 2000,
     })
   } else {
     // លោតសារជោគជ័យតូចមួយនៅជ្រុងខាងស្តាំ
@@ -377,7 +406,7 @@ const handleToggleFavorite = async () => {
       icon: 'success',
       title: result.is_favorite ? 'Added to Wishlist!' : 'Removed from Wishlist!',
       showConfirmButton: false,
-      timer: 1500
+      timer: 1500,
     })
   }
 }
@@ -408,30 +437,43 @@ const buyNow = async () => {
       icon: 'error',
       title: 'This product is out of stock.',
       showConfirmButton: false,
-      timer: 2000
-    });
-    return;
+      timer: 2000,
+    })
+    return
   }
 
   try {
-    isAdding.value = true; // បើក Loading វិលៗ
+    isAdding.value = true // បើក Loading វិលៗ
 
     // ៣. បន្ថែមទំនិញចូលកន្ត្រក (ប្រើ Function addItem របស់ CartStore ដូចខាង Add to cart ដែរ)
-    const result = await cartStore.addItem(props.product, quantity.value);
-    
-    isAdding.value = false; // បិទ Loading
+    const result = await cartStore.addItem(props.product, quantity.value)
+
+    isAdding.value = false // បិទ Loading
 
     if (result.success) {
       // ៤. បើចូលកន្ត្រកជោគជ័យ រុញគាត់ទៅកាន់ទំព័រ Checkout តែម្តង
-      router.push('/checkout');
+      router.push('/checkout')
     } else {
-      Swal.fire('Failed', result.error || 'Could not process your request.', 'error');
+      Swal.fire('Failed', result.error || 'Could not process your request.', 'error')
     }
-
   } catch (error) {
-    isAdding.value = false;
-    console.error('Buy Now Error:', error);
-    Swal.fire('Error', 'Something went wrong. Please try again.', 'error');
+    isAdding.value = false
+    console.error('Buy Now Error:', error)
+    Swal.fire('Error', 'Something went wrong. Please try again.', 'error')
   }
-};
+
+  
+}
 </script>
+
+<style scoped>
+/* លាក់សញ្ញាព្រួញឡើងចុះរបស់ input type="number" */
+.hide-arrows::-webkit-outer-spin-button,
+.hide-arrows::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.hide-arrows {
+  -moz-appearance: textfield;
+}
+</style>

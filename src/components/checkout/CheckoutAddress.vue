@@ -3,9 +3,9 @@
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-xl font-semibold text-slate-800">Shipping Address</h2>
 
-      <button
+<button
         v-if="addressStore.defaultAddress"
-        @click="toggleEditMode"
+        @click="isEditing ? toggleEditMode() : editCurrentAddress()"
         class="text-blue-600 text-sm font-medium hover:underline cursor-pointer"
       >
         {{ isEditing ? 'Cancel' : 'Change Address' }}
@@ -161,6 +161,23 @@ const searchQuery = ref('')
 const shippingZones = ref([]) // 🌟 ផ្ទុកទិន្នន័យពី API
 const isLoadingZones = ref(false)
 
+const editAddressId = ref(null)
+
+const editCurrentAddress = () => {
+  if (addressStore.defaultAddress) {
+    // ចាប់យកទិន្នន័យចាស់មកញាត់ចូល Form
+    form.receiver_name = addressStore.defaultAddress.receiver_name
+    form.receiver_phone = addressStore.defaultAddress.receiver_phone
+    form.shipping_zone_id = addressStore.defaultAddress.shipping_zone_id
+    form.address_detail = addressStore.defaultAddress.address_detail
+    
+    editAddressId.value = addressStore.defaultAddress.id // ចំណាំ ID ទុក
+    isEditing.value = true
+    emitCurrentState()
+  }
+}
+
+
 // 🌟 ទាញយកឈ្មោះ Zone ដែលបានរើស
 const selectedZoneName = computed(() => {
   const zone = shippingZones.value.find((z) => z.id === form.shipping_zone_id)
@@ -176,11 +193,23 @@ const filteredZones = computed(() => {
 })
 
 // 🌟 ស្វែងរក Zone ID ស្វ័យប្រវត្តិ សម្រាប់អាសយដ្ឋានចាស់ (Backward Compatibility)
+// 🌟 កែប្រែកន្លែងនេះ 🌟
 const matchedDefaultZoneId = computed(() => {
-  if (!addressStore.defaultAddress || !addressStore.defaultAddress.city) return null
-  const oldCityName = addressStore.defaultAddress.city.toLowerCase()
-  const matched = shippingZones.value.find((z) => z.name.toLowerCase() === oldCityName)
-  return matched ? matched.id : null
+  if (!addressStore.defaultAddress) return null
+
+  // អាទិភាពទី ១៖ បើមាន ID ស្រាប់ពី Database គឺយកវាប្រើតែម្តង (សម្រាប់ទិន្នន័យថ្មី)
+  if (addressStore.defaultAddress.shipping_zone_id) {
+    return addressStore.defaultAddress.shipping_zone_id
+  }
+
+  // អាទិភាពទី ២៖ (សម្រាប់ទិន្នន័យចាស់) ឆែកតាមឈ្មោះទីក្រុង
+  if (addressStore.defaultAddress.city) {
+    const oldCityName = addressStore.defaultAddress.city.toLowerCase()
+    const matched = shippingZones.value.find((z) => z.name.toLowerCase() === oldCityName)
+    return matched ? matched.id : null
+  }
+
+  return null
 })
 
 const selectZone = (zone) => {
@@ -236,14 +265,20 @@ watch(
   () => addressStore.defaultAddress,
   (newAddress) => {
     if (newAddress) {
-      isEditing.value = false
-      emitCurrentState()
+      isEditing.value = false // បិទ Form វាយបញ្ចូល
+    } else {
+      isEditing.value = true  // បើក Form បើអត់ទាន់មានអាសយដ្ឋានចាស់
     }
+    emitCurrentState()
   },
+  { immediate: true } // 🌟 មុខងារពិសេស៖ បញ្ជាឱ្យវាធ្វើការតាមដានរហូត តាំងពីពេលបើក Component ភ្លាមៗ
 )
 
 const toggleEditMode = () => {
   isEditing.value = !isEditing.value
+  if (!isEditing.value) {
+    editAddressId.value = null 
+  }
   emitCurrentState()
 }
 
@@ -270,7 +305,7 @@ watch(
   },
 )
 
-const emitCurrentState = () => {
+function emitCurrentState() {
   let isValid
   let finalData
 
@@ -301,8 +336,13 @@ const emitCurrentState = () => {
       shipping_phone: form.receiver_phone,
       shipping_address: form.address_detail,
       shipping_zone_id: form.shipping_zone_id,
-      shipping_zone_data: getZoneData(form.shipping_zone_id), // 🌟 បោះទិន្នន័យ Zone លម្អិតទៅក្រៅ
-      is_new: true,
+      shipping_zone_data: getZoneData(form.shipping_zone_id), 
+      
+      // 🌟 រៀបចំឱ្យស្អាត លុប is_new ទី ២ ចោល 🌟
+      is_new: !editAddressId.value, 
+      is_update: !!editAddressId.value,
+      address_id: editAddressId.value,
+      
       save_to_db: saveAddress.value,
       raw_form: { ...form },
     }

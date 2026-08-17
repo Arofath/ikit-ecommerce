@@ -46,11 +46,15 @@
             <i class="fas fa-minus text-xs"></i>
           </button>
 
-          <div
-            class="w-10 h-full flex items-center justify-center font-semibold text-slate-700 bg-white border-x border-slate-200"
-          >
-            {{ item.quantity }}
-          </div>
+          <!-- 🌟 ជំនួស <div> ចាស់ដោយ <input> នេះ 🌟 -->
+          <input
+            type="number"
+            :value="item.quantity"
+            @change="handleInputQuantity($event)"
+            @keyup.enter="$event.target.blur()"
+            class="w-12 h-full text-center font-semibold text-slate-700 bg-white border-x border-slate-200 outline-none hide-arrows"
+            min="1"
+          />
 
           <button
             @click="handleUpdateQuantity(item.quantity + 1)"
@@ -118,6 +122,22 @@ const handleUpdateQuantity = (newQuantity) => {
   }, 500)
 }
 
+const handleInputQuantity = (event) => {
+  let qty = parseInt(event.target.value)
+
+  // ប្រសិនបើវាយអក្សរ ឬលេខតូចជាង ១ ឱ្យត្រឡប់មកលេខ ១ វិញ
+  if (isNaN(qty) || qty < 1) {
+    qty = 1
+    event.target.value = 1 // Update UI ភ្លាមៗ
+  }
+
+  // ប្រសិនបើលេខដែលវាយចូល ស្មើនឹងលេខចាស់ មិនបាច់ធ្វើអ្វីទេ
+  if (qty === props.item.quantity) return
+
+  // បញ្ជូនលេខថ្មីទៅកាន់មុខងារដែលមានស្រាប់ (ដែលមានប្រព័ន្ធ Debounce ការពារស្រាប់)
+  handleUpdateQuantity(qty)
+}
+
 const handleRemoveItem = async () => {
   const confirm = await Swal.fire({
     title: 'Remove item?',
@@ -142,3 +162,15 @@ const handleRemoveItem = async () => {
   }
 }
 </script>
+
+<style scoped>
+/* លាក់សញ្ញាព្រួញឡើងចុះរបស់ input type="number" */
+.hide-arrows::-webkit-outer-spin-button,
+.hide-arrows::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.hide-arrows {
+  -moz-appearance: textfield;
+}
+</style>
