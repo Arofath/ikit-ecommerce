@@ -35,9 +35,9 @@
             <!-- ជម្រើស Bank Transfer -->
             <label 
               class="flex items-center p-4 border rounded-lg cursor-pointer transition-colors"
-              :class="paymentMethod === 'BANK_TRANSFER' ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:bg-blue-50'"
+              :class="paymentMethod === 'KHQR' ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:bg-blue-50'"
             >
-              <input type="radio" v-model="paymentMethod" value="BANK_TRANSFER" class="mr-3 cursor-pointer">
+              <input type="radio" v-model="paymentMethod" value="KHQR" class="mr-3 cursor-pointer">
               <div>
                 <span class="font-bold block text-slate-800">🏦 Bank Transfer (KHQR)</span>
                 <span class="text-xs text-slate-500">Scan QR Code and upload receipt on the next step</span>
@@ -124,7 +124,7 @@ const handleAddressUpdate = (payload) => {
 
     // ការពារការបង់ COD សម្រាប់អ្នកតាមខេត្ត
     if (zoneData.name.toLowerCase() !== 'phnom penh') {
-      paymentMethod.value = 'BANK_TRANSFER'
+      paymentMethod.value = 'KHQR'
     }
   } else {
     shippingFee.value = 0
